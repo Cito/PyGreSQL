@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Examples for using SQL functions &#8212; PyGreSQL 6.1.0</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=6340cb70"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="copyright" title="Copyright" href="../../copyright.html" />
+    <link rel="next" title="Examples for using the system catalogs" href="syscat.html" />
+    <link rel="prev" title="Examples for advanced features" href="advanced.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="examples-for-using-sql-functions">
+<h1>Examples for using SQL functions<a class="headerlink" href="#examples-for-using-sql-functions" title="Link to this heading">¶</a></h1>
+<p>We assume that you have already created a connection to the PostgreSQL
+database, as explained in the <a class="reference internal" href="basic.html"><span class="doc">Basic examples</span></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pg</span><span class="w"> </span><span class="kn">import</span> <span class="n">DB</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span> <span class="o">=</span> <span class="n">DB</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span>
+</pre></div>
+</div>
+<section id="creating-sql-functions-on-base-types">
+<h2>Creating SQL Functions on Base Types<a class="headerlink" href="#creating-sql-functions-on-base-types" title="Link to this heading">¶</a></h2>
+<p>A <strong>CREATE FUNCTION</strong> statement lets you create a new function that can be
+used in expressions (in SELECT, INSERT, etc.). We will start with functions
+that return values of base types.</p>
+<p>Let’s create a simple SQL function that takes no arguments and returns 1:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;CREATE FUNCTION one() RETURNS int4</span>
+<span class="gp">... </span><span class="s2">    AS &#39;SELECT 1 as ONE&#39; LANGUAGE SQL&quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Functions can be used in any expressions (eg. in the target list or
+qualifications):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SELECT one() AS answer&quot;</span><span class="p">))</span>
+<span class="go">answer</span>
+<span class="go">------</span>
+<span class="go">     1</span>
+<span class="go">(1 row)</span>
+</pre></div>
+</div>
+<p>Here’s how you create a function that takes arguments. The following function
+returns the sum of its two arguments:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;CREATE FUNCTION add_em(int4, int4) RETURNS int4</span>
+<span class="gp">... </span><span class="s2">    AS $$ SELECT $1 + $2 $$ LANGUAGE SQL&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SELECT add_em(1, 2) AS answer&quot;</span><span class="p">))</span>
+<span class="go">answer</span>
+<span class="go">------</span>
+<span class="go">     3</span>
+<span class="go">(1 row)</span>
+</pre></div>
+</div>
+</section>
+<section id="creating-sql-functions-on-composite-types">
+<h2>Creating SQL Functions on Composite Types<a class="headerlink" href="#creating-sql-functions-on-composite-types" title="Link to this heading">¶</a></h2>
+<p>It is also possible to create functions that return values of composite types.</p>
+<p>Before we create more sophisticated functions, let’s populate an EMP table:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;CREATE TABLE EMP (</span>
+<span class="gp">... </span><span class="s2">    name   text,</span>
+<span class="gp">... </span><span class="s2">    salary int4,</span>
+<span class="gp">... </span><span class="s2">    age f   int4,</span>
+<span class="gp">... </span><span class="s2">    dept   varchar(16))&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">emps</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&#39;Sam&#39;, 1200, 16, &#39;toy&#39;&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;&#39;Claire&#39;, 5000, 32, &#39;shoe&#39;&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;&#39;Andy&#39;, -1000, 2, &#39;candy&#39;&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;&#39;Bill&#39;, 4200, 36, &#39;shoe&#39;&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;&#39;Ginger&#39;, 4800, 30, &#39;candy&#39;&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">emp</span> <span class="ow">in</span> <span class="n">emps</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">query</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INSERT INTO EMP VALUES (</span><span class="si">{</span><span class="n">emp</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Every INSERT statement will return a ‘1’ indicating that it has inserted
+one row into the EMP table.</p>
+<p>The argument of a function can also be a tuple. For instance, <em>double_salary</em>
+takes a tuple of the EMP table:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;CREATE FUNCTION double_salary(EMP) RETURNS int4</span>
+<span class="gp">... </span><span class="s2">    AS $$ SELECT $1.salary * 2 AS salary $$ LANGUAGE SQL&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;SELECT name, double_salary(EMP) AS dream</span>
+<span class="gp">... </span><span class="s2">    FROM EMP WHERE EMP.dept = &#39;toy&#39;&quot;&quot;&quot;</span><span class="p">))</span>
+<span class="go">name|dream</span>
+<span class="go">----+-----</span>
+<span class="go">Sam | 2400</span>
+<span class="go">(1 row)</span>
+</pre></div>
+</div>
+<p>The return value of a function can also be a tuple. However, make sure that the
+expressions in the target list are in the same order as the columns of EMP:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;CREATE FUNCTION new_emp() RETURNS EMP AS $$</span>
+<span class="gp">... </span><span class="s2">    SELECT &#39;None&#39;::text AS name,</span>
+<span class="gp">... </span><span class="s2">        1000 AS salary,</span>
+<span class="gp">... </span><span class="s2">        25 AS age,</span>
+<span class="gp">... </span><span class="s2">        &#39;None&#39;::varchar(16) AS dept</span>
+<span class="gp">... </span><span class="s2">    $$ LANGUAGE SQL&quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can then extract a column out of the resulting tuple by using the
+“function notation” for projection columns (i.e. <code class="docutils literal notranslate"><span class="pre">bar(foo)</span></code> is equivalent
+to <code class="docutils literal notranslate"><span class="pre">foo.bar</span></code>). Note that <code class="docutils literal notranslate"><span class="pre">new_emp().name</span></code> isn’t supported:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SELECT name(new_emp()) AS nobody&quot;</span><span class="p">))</span>
+<span class="go">nobody</span>
+<span class="go">------</span>
+<span class="go">None</span>
+<span class="go">(1 row)</span>
+</pre></div>
+</div>
+<p>Let’s try one more function that returns tuples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;CREATE FUNCTION high_pay() RETURNS setof EMP</span>
+<span class="gp">... </span><span class="s2">        AS &#39;SELECT * FROM EMP where salary &gt; 1500&#39;</span>
+<span class="gp">... </span><span class="s2">    LANGUAGE SQL&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SELECT name(high_pay()) AS overpaid&quot;</span><span class="p">)</span>
+<span class="go">overpaid</span>
+<span class="go">--------</span>
+<span class="go">Claire</span>
+<span class="go">Bill</span>
+<span class="go">Ginger</span>
+<span class="go">(3 rows)</span>
+</pre></div>
+</div>
+</section>
+<section id="creating-sql-functions-with-multiple-sql-statements">
+<h2>Creating SQL Functions with multiple SQL statements<a class="headerlink" href="#creating-sql-functions-with-multiple-sql-statements" title="Link to this heading">¶</a></h2>
+<p>You can also create functions that do more than just a SELECT.</p>
+<p>You may have noticed that Andy has a negative salary. We’ll create a function
+that removes employees with negative salaries:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM EMP&quot;</span><span class="p">)</span>
+<span class="go"> name |salary|age|dept</span>
+<span class="go">------+------+---+-----</span>
+<span class="go">Sam   |  1200| 16|toy</span>
+<span class="go">Claire|  5000| 32|shoe</span>
+<span class="go">Andy  | -1000|  2|candy</span>
+<span class="go">Bill  |  4200| 36|shoe</span>
+<span class="go">Ginger|  4800| 30|candy</span>
+<span class="go">(5 rows)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;CREATE FUNCTION clean_EMP () RETURNS int4 AS</span>
+<span class="gp">... </span><span class="s2">        &#39;DELETE FROM EMP WHERE EMP.salary &lt; 0;</span>
+<span class="gp">... </span><span class="s2">         SELECT 1 AS ignore_this&#39;</span>
+<span class="gp">... </span><span class="s2">    LANGUAGE SQL&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SELECT clean_EMP()&quot;</span><span class="p">)</span>
+<span class="go">clean_emp</span>
+<span class="go">---------</span>
+<span class="go">        1</span>
+<span class="go">(1 row)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM EMP&quot;</span><span class="p">)</span>
+<span class="go"> name |salary|age|dept</span>
+<span class="go">------+------+---+-----</span>
+<span class="go">Sam   |  1200| 16|toy</span>
+<span class="go">Claire|  5000| 32|shoe</span>
+<span class="go">Bill  |  4200| 36|shoe</span>
+<span class="go">Ginger|  4800| 30|candy</span>
+<span class="go">(4 rows)</span>
+</pre></div>
+</div>
+</section>
+<section id="remove-functions-that-were-created-in-this-example">
+<h2>Remove functions that were created in this example<a class="headerlink" href="#remove-functions-that-were-created-in-this-example" title="Link to this heading">¶</a></h2>
+<p>We can remove the functions that we have created in this example and the
+table EMP, by using the DROP command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;DROP FUNCTION clean_EMP()&quot;</span><span class="p">)</span>
+<span class="n">query</span><span class="p">(</span><span class="s2">&quot;DROP FUNCTION high_pay()&quot;</span><span class="p">)</span>
+<span class="n">query</span><span class="p">(</span><span class="s2">&quot;DROP FUNCTION new_emp()&quot;</span><span class="p">)</span>
+<span class="n">query</span><span class="p">(</span><span class="s2">&quot;DROP FUNCTION add_em(int4, int4)&quot;</span><span class="p">)</span>
+<span class="n">query</span><span class="p">(</span><span class="s2">&quot;DROP FUNCTION one()&quot;</span><span class="p">)</span>
+<span class="n">query</span><span class="p">(</span><span class="s2">&quot;DROP TABLE EMP CASCADE&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/pygresql.png" alt="Logo of PyGreSQL"/>
+            </a></p>
+<h1 class="logo"><a href="../../index.html">PyGreSQL</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">About PyGreSQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../copyright.html">Copyright notice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../download/index.html">Download information</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">The PyGreSQL documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#contents">Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../community/index.html">PyGreSQL Development and Support</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">The PyGreSQL documentation</a><ul>
+  <li><a href="index.html">A PostgreSQL Primer</a><ul>
+      <li>Previous: <a href="advanced.html" title="previous chapter">Examples for advanced features</a></li>
+      <li>Next: <a href="syscat.html" title="next chapter">Examples for using the system catalogs</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, The PyGreSQL team.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/contents/postgres/func.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

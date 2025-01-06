@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Module functions and constants &#8212; PyGreSQL 6.1.0</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=6340cb70"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="copyright" title="Copyright" href="../../copyright.html" />
+    <link rel="next" title="Connection – The connection object" href="connection.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-functions-and-constants">
+<h1>Module functions and constants<a class="headerlink" href="#module-functions-and-constants" title="Link to this heading">¶</a></h1>
+<p>The <a class="reference internal" href="index.html#module-pgdb" title="pgdb"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pgdb</span></code></a> module defines a <a class="reference internal" href="#pgdb.connect" title="pgdb.connect"><code class="xref py py-func docutils literal notranslate"><span class="pre">connect()</span></code></a> function that allows to
+connect to a database, some global constants describing the capabilities
+of the module as well as several exception classes.</p>
+<section id="connect-open-a-postgresql-connection">
+<h2>connect – Open a PostgreSQL connection<a class="headerlink" href="#connect-open-a-postgresql-connection" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pgdb.connect">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">dsn</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">user</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">password</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">host</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">database</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pgdb.connect" title="Link to this definition">¶</a></dt>
+<dd><p>Return a new connection to the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dsn</strong> (<em>str</em>) – data source name as string</p></li>
+<li><p><strong>user</strong> (<em>str</em>) – the database user name</p></li>
+<li><p><strong>password</strong> (<em>str</em>) – the database password</p></li>
+<li><p><strong>host</strong> (<em>str</em>) – the hostname of the database</p></li>
+<li><p><strong>database</strong> – the name of the database</p></li>
+<li><p><strong>kwargs</strong> (<em>dict</em>) – other connection parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a connection object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="connection.html#pgdb.Connection" title="pgdb.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Connection</span></code></a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#pgdb.OperationalError" title="pgdb.OperationalError"><strong>pgdb.OperationalError</strong></a> – error connecting to the database</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This function takes parameters specifying how to connect to a PostgreSQL
+database and returns a <a class="reference internal" href="connection.html#pgdb.Connection" title="pgdb.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Connection</span></code></a> object using these parameters.
+If specified, the <em>dsn</em> parameter must be a string with the format
+<code class="docutils literal notranslate"><span class="pre">'host:base:user:passwd:opt'</span></code>. All of the parts specified in the <em>dsn</em>
+are optional. You can also specify the parameters individually using keyword
+arguments, which always take precedence. The <em>host</em> can also contain a port
+if specified in the format <code class="docutils literal notranslate"><span class="pre">'host:port'</span></code>. In the <em>opt</em> part of the <em>dsn</em>
+you can pass command-line options to the server. You can pass additional
+connection parameters using the optional <em>kwargs</em> keyword arguments.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">con</span> <span class="o">=</span> <span class="n">connect</span><span class="p">(</span><span class="n">dsn</span><span class="o">=</span><span class="s1">&#39;myhost:mydb&#39;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s1">&#39;guido&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;234$&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 5.0.1: </span>Support for additional parameters passed as <em>kwargs</em>.</p>
+</div>
+</section>
+<section id="get-set-reset-typecast-control-the-global-typecast-functions">
+<h2>get/set/reset_typecast – Control the global typecast functions<a class="headerlink" href="#get-set-reset-typecast-control-the-global-typecast-functions" title="Link to this heading">¶</a></h2>
+<p>PyGreSQL uses typecast functions to cast the raw data coming from the
+database to Python objects suitable for the particular database type.
+These functions take a single string argument that represents the data
+to be casted and must return the casted value.</p>
+<p>PyGreSQL provides built-in typecast functions for the common database types,
+but if you want to change these or add more typecast functions, you can set
+these up using the following functions.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The following functions are not part of the DB-API 2 standard.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pgdb.get_typecast">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">get_typecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">typ</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pgdb.get_typecast" title="Link to this definition">¶</a></dt>
+<dd><p>Get the global cast function for the given database type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>typ</strong> (<em>str</em>) – PostgreSQL type name or type code</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the typecast function for the specified type</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>function or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pgdb.set_typecast">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">set_typecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">typ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pgdb.set_typecast" title="Link to this definition">¶</a></dt>
+<dd><p>Set a global typecast function for the given database type(s)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>typ</strong> (<em>str</em><em> or </em><em>int</em>) – PostgreSQL type name or type code, or list of such</p></li>
+<li><p><strong>cast</strong> – the typecast function to be set for the specified type(s)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>The typecast function must take one string object as argument and return a
+Python object into which the PostgreSQL type shall be casted.  If the function
+takes another parameter named <em>connection</em>, then the current database
+connection will also be passed to the typecast function.  This may sometimes
+be necessary to look up certain database settings.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+<p>As of version 5.0.3 you can also use this method to change the typecasting
+of PostgreSQL array types. You must run <code class="docutils literal notranslate"><span class="pre">set_typecast('anyarray',</span> <span class="pre">cast)</span></code>
+in order to do this. The <code class="docutils literal notranslate"><span class="pre">cast</span></code> method must take a string value and a cast
+function for the base type and return the array converted to a Python object.
+For instance, run <code class="docutils literal notranslate"><span class="pre">set_typecast('anyarray',</span> <span class="pre">lambda</span> <span class="pre">v,</span> <span class="pre">c:</span> <span class="pre">v)</span></code> to switch off
+the casting of arrays completely, and always return them encoded as strings.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pgdb.reset_typecast">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">reset_typecast</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">typ</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pgdb.reset_typecast" title="Link to this definition">¶</a></dt>
+<dd><p>Reset the typecasts for the specified (or all) type(s) to their defaults</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>typ</strong> (<em>str</em><em>, </em><em>list</em><em> or </em><em>None</em>) – PostgreSQL type name or type code, or list of such,
+or None to reset all typecast functions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+<p>Note that database connections cache types and their cast functions using
+connection specific <a class="reference internal" href="typecache.html#pgdb.TypeCache" title="pgdb.TypeCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeCache</span></code></a> objects.  You can also get, set and
+reset typecast functions on the connection level using the methods
+<a class="reference internal" href="typecache.html#pgdb.TypeCache.get_typecast" title="pgdb.TypeCache.get_typecast"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TypeCache.get_typecast()</span></code></a>, <a class="reference internal" href="typecache.html#pgdb.TypeCache.set_typecast" title="pgdb.TypeCache.set_typecast"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TypeCache.set_typecast()</span></code></a> and
+<a class="reference internal" href="typecache.html#pgdb.TypeCache.reset_typecast" title="pgdb.TypeCache.reset_typecast"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TypeCache.reset_typecast()</span></code></a> of the <a class="reference internal" href="connection.html#pgdb.Connection.type_cache" title="pgdb.Connection.type_cache"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Connection.type_cache</span></code></a>.  This
+will not affect other connections or future connections.  In order to be sure
+a global change is picked up by a running connection, you must reopen it or
+call <a class="reference internal" href="typecache.html#pgdb.TypeCache.reset_typecast" title="pgdb.TypeCache.reset_typecast"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TypeCache.reset_typecast()</span></code></a> on the <a class="reference internal" href="connection.html#pgdb.Connection.type_cache" title="pgdb.Connection.type_cache"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Connection.type_cache</span></code></a>.</p>
+</section>
+<section id="module-constants">
+<h2>Module constants<a class="headerlink" href="#module-constants" title="Link to this heading">¶</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="pgdb.apilevel">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">apilevel</span></span><a class="headerlink" href="#pgdb.apilevel" title="Link to this definition">¶</a></dt>
+<dd><p>The string constant <code class="docutils literal notranslate"><span class="pre">'2.0'</span></code>, stating that the module is DB-API 2.0 level
+compliant.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pgdb.threadsafety">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">threadsafety</span></span><a class="headerlink" href="#pgdb.threadsafety" title="Link to this definition">¶</a></dt>
+<dd><p>The integer constant 1, stating that the module itself is thread-safe,
+but the connections are not thread-safe, and therefore must be protected
+with a lock if you want to use them from different threads.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pgdb.paramstyle">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">paramstyle</span></span><a class="headerlink" href="#pgdb.paramstyle" title="Link to this definition">¶</a></dt>
+<dd><p>The string constant <code class="docutils literal notranslate"><span class="pre">pyformat</span></code>, stating that parameters should be passed
+using Python extended format codes, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;</span> <span class="pre">...</span> <span class="pre">WHERE</span> <span class="pre">name=%(name)s&quot;</span></code>.</p>
+</dd></dl>
+
+</section>
+<section id="errors-raised-by-this-module">
+<h2>Errors raised by this module<a class="headerlink" href="#errors-raised-by-this-module" title="Link to this heading">¶</a></h2>
+<p>The errors that can be raised by the <a class="reference internal" href="index.html#module-pgdb" title="pgdb"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pgdb</span></code></a> module are the following:</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="pgdb.Warning">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">Warning</span></span><a class="headerlink" href="#pgdb.Warning" title="Link to this definition">¶</a></dt>
+<dd><p>Exception raised for important warnings like data truncations while
+inserting.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pgdb.Error">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">Error</span></span><a class="headerlink" href="#pgdb.Error" title="Link to this definition">¶</a></dt>
+<dd><p>Exception that is the base class of all other error exceptions. You can
+use this to catch all errors with one single except statement.
+Warnings are not considered errors and thus do not use this class as base.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pgdb.InterfaceError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">InterfaceError</span></span><a class="headerlink" href="#pgdb.InterfaceError" title="Link to this definition">¶</a></dt>
+<dd><p>Exception raised for errors that are related to the database interface
+rather than the database itself.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pgdb.DatabaseError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">DatabaseError</span></span><a class="headerlink" href="#pgdb.DatabaseError" title="Link to this definition">¶</a></dt>
+<dd><p>Exception raised for errors that are related to the database.</p>
+<p>In PyGreSQL, this also has a <code class="xref py py-attr docutils literal notranslate"><span class="pre">DatabaseError.sqlstate</span></code> attribute
+that contains the <code class="docutils literal notranslate"><span class="pre">SQLSTATE</span></code> error code of this error.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pgdb.DataError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">DataError</span></span><a class="headerlink" href="#pgdb.DataError" title="Link to this definition">¶</a></dt>
+<dd><p>Exception raised for errors that are due to problems with the processed
+data like division by zero or numeric value out of range.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pgdb.OperationalError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">OperationalError</span></span><a class="headerlink" href="#pgdb.OperationalError" title="Link to this definition">¶</a></dt>
+<dd><p>Exception raised for errors that are related to the database’s operation
+and not necessarily under the control of the programmer, e.g. an unexpected
+disconnect occurs, the data source name is not found, a transaction could
+not be processed, or a memory allocation error occurred during processing.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pgdb.IntegrityError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">IntegrityError</span></span><a class="headerlink" href="#pgdb.IntegrityError" title="Link to this definition">¶</a></dt>
+<dd><p>Exception raised when the relational integrity of the database is affected,
+e.g. a foreign key check fails.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pgdb.ProgrammingError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">ProgrammingError</span></span><a class="headerlink" href="#pgdb.ProgrammingError" title="Link to this definition">¶</a></dt>
+<dd><p>Exception raised for programming errors, e.g. table not found or already
+exists, syntax error in the SQL statement or wrong number of parameters
+specified.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pgdb.NotSupportedError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">NotSupportedError</span></span><a class="headerlink" href="#pgdb.NotSupportedError" title="Link to this definition">¶</a></dt>
+<dd><p>Exception raised in case a method or database API was used which is not
+supported by the database.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/pygresql.png" alt="Logo of PyGreSQL"/>
+            </a></p>
+<h1 class="logo"><a href="../../index.html">PyGreSQL</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">About PyGreSQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../copyright.html">Copyright notice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../download/index.html">Download information</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">The PyGreSQL documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#contents">Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../community/index.html">PyGreSQL Development and Support</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">The PyGreSQL documentation</a><ul>
+  <li><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pgdb</span></code> — The DB-API Compliant Interface</a><ul>
+      <li>Previous: <a href="introduction.html" title="previous chapter">Introduction</a></li>
+      <li>Next: <a href="connection.html" title="next chapter">Connection – The connection object</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, The PyGreSQL team.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/contents/pgdb/module.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

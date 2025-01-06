@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>The DB wrapper class &#8212; PyGreSQL 6.1.0</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=6340cb70"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="copyright" title="Copyright" href="../../copyright.html" />
+    <link rel="next" title="Query methods" href="query.html" />
+    <link rel="prev" title="Connection – The connection object" href="connection.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="the-db-wrapper-class">
+<h1>The DB wrapper class<a class="headerlink" href="#the-db-wrapper-class" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pg.DB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pg.</span></span><span class="sig-name descname"><span class="pre">DB</span></span><a class="headerlink" href="#pg.DB" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>The <a class="reference internal" href="connection.html#pg.Connection" title="pg.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Connection</span></code></a> methods are wrapped in the class <a class="reference internal" href="#pg.DB" title="pg.DB"><code class="xref py py-class docutils literal notranslate"><span class="pre">DB</span></code></a>
+which also adds convenient higher level methods for working with the
+database.  It also serves as a context manager for the connection.
+The preferred way to use this module is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pg</span>
+
+<span class="k">with</span> <span class="n">pg</span><span class="o">.</span><span class="n">DB</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="k">as</span> <span class="n">db</span><span class="p">:</span>  <span class="c1"># for parameters, see below</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>  <span class="c1"># just for example</span>
+            <span class="s2">&quot;SELECT foo, bar FROM foo_bar_table WHERE foo !~ bar&quot;</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">dictresult</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{foo}</span><span class="s1"> </span><span class="si">{bar}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">r</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This class can be subclassed as in this example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pg</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DB_ride</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">DB</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ride database wrapper</span>
+
+<span class="sd">    This class encapsulates the database functions and the specific</span>
+<span class="sd">    methods for the ride database.&quot;&quot;&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Open a database connection to the rides database&quot;&quot;&quot;</span>
+    <span class="n">pg</span><span class="o">.</span><span class="n">DB</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbname</span><span class="o">=</span><span class="s1">&#39;ride&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SET DATESTYLE TO &#39;ISO&#39;&quot;</span><span class="p">)</span>
+
+<span class="p">[</span><span class="n">Add</span> <span class="ow">or</span> <span class="n">override</span> <span class="n">methods</span> <span class="n">here</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The following describes the methods and variables of this class.</p>
+<section id="initialization">
+<h2>Initialization<a class="headerlink" href="#initialization" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="#pg.DB" title="pg.DB"><code class="xref py py-class docutils literal notranslate"><span class="pre">DB</span></code></a> class is initialized with the same arguments as the
+<a class="reference internal" href="module.html#pg.connect" title="pg.connect"><code class="xref py py-func docutils literal notranslate"><span class="pre">connect()</span></code></a> function described above. It also initializes a few
+internal variables. The statement <code class="docutils literal notranslate"><span class="pre">db</span> <span class="pre">=</span> <span class="pre">DB()</span></code> will open the local
+database with the name of the user just like <code class="docutils literal notranslate"><span class="pre">connect()</span></code> does.</p>
+<p>You can also initialize the DB class with an existing <a class="reference internal" href="index.html#module-pg" title="pg"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pg</span></code></a> or <a class="reference internal" href="../pgdb/index.html#module-pgdb" title="pgdb"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pgdb</span></code></a>
+connection. Pass this connection as a single unnamed parameter, or as a
+single parameter named <code class="docutils literal notranslate"><span class="pre">db</span></code>. This allows you to use all of the methods
+of the DB class with a DB-API 2 compliant connection. Note that the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.close()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.reopen()</span></code> methods are inoperative in this case.</p>
+</section>
+<section id="pkey-return-the-primary-key-of-a-table">
+<h2>pkey – return the primary key of a table<a class="headerlink" href="#pkey-return-the-primary-key-of-a-table" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.pkey">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">pkey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.pkey" title="Link to this definition">¶</a></dt>
+<dd><p>Return the primary key of a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>table</strong> (<em>str</em>) – name of table</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Name of the field that is the primary key of the table</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>KeyError</strong> – the table does not have a primary key</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method returns the primary key of a table.  Single primary keys are
+returned as strings unless you set the composite flag.  Composite primary
+keys are always represented as tuples.  Note that this raises a KeyError
+if the table does not have a primary key.</p>
+</section>
+<section id="pkeys-return-the-primary-keys-of-a-table">
+<h2>pkeys – return the primary keys of a table<a class="headerlink" href="#pkeys-return-the-primary-keys-of-a-table" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.pkeys">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">pkeys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.pkeys" title="Link to this definition">¶</a></dt>
+<dd><p>Return the primary keys of a table as a tuple</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>table</strong> (<em>str</em>) – name of table</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Names of the fields that are the primary keys of the table</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>KeyError</strong> – the table does not have a primary key</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method returns the primary keys of a table as a tuple, i.e.
+single primary keys are also returned as a tuple with one item.
+Note that this raises a KeyError if the table does not have a primary key.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 6.0.</span></p>
+</div>
+</section>
+<section id="get-databases-get-list-of-databases-in-the-system">
+<h2>get_databases – get list of databases in the system<a class="headerlink" href="#get-databases-get-list-of-databases-in-the-system" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.get_databases">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">get_databases</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.get_databases" title="Link to this definition">¶</a></dt>
+<dd><p>Get the list of databases in the system</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>all databases in the system</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Although you can do this with a simple select, it is added here for
+convenience.</p>
+</section>
+<section id="get-relations-get-list-of-relations-in-connected-database">
+<h2>get_relations – get list of relations in connected database<a class="headerlink" href="#get-relations-get-list-of-relations-in-connected-database" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.get_relations">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">get_relations</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">kinds</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">system</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.get_relations" title="Link to this definition">¶</a></dt>
+<dd><p>Get the list of relations in connected database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kinds</strong> (<em>str</em>) – a string or sequence of type letters</p></li>
+<li><p><strong>system</strong> (<em>bool</em>) – whether system relations should be returned</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>all relations of the given kinds in the database</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method returns the list of relations in the connected database.  Although
+you can do this with a simple select, it is added here for convenience.  You
+can select which kinds of relations you are interested in by passing type
+letters in the <cite>kinds</cite> parameter.  The type letters are <code class="docutils literal notranslate"><span class="pre">r</span></code> = ordinary table,
+<code class="docutils literal notranslate"><span class="pre">i</span></code> = index, <code class="docutils literal notranslate"><span class="pre">S</span></code> = sequence, <code class="docutils literal notranslate"><span class="pre">v</span></code> = view, <code class="docutils literal notranslate"><span class="pre">c</span></code> = composite type,
+<code class="docutils literal notranslate"><span class="pre">s</span></code> = special, <code class="docutils literal notranslate"><span class="pre">t</span></code> = TOAST table.  If <cite>kinds</cite> is None or an empty string,
+all relations are returned (this is also the default).  If <cite>system</cite> is set to
+<cite>True</cite>, then system tables and views (temporary tables, toast tables, catalog
+views and tables) will be returned as well, otherwise they will be ignored.</p>
+</section>
+<section id="get-tables-get-list-of-tables-in-connected-database">
+<h2>get_tables – get list of tables in connected database<a class="headerlink" href="#get-tables-get-list-of-tables-in-connected-database" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.get_tables">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">get_tables</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.get_tables" title="Link to this definition">¶</a></dt>
+<dd><p>Get the list of tables in connected database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>system</strong> (<em>bool</em>) – whether system tables should be returned</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>all tables in connected database</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This is a shortcut for <code class="docutils literal notranslate"><span class="pre">get_relations('r',</span> <span class="pre">system)</span></code> that has been added for
+convenience.</p>
+</section>
+<section id="get-attnames-get-the-attribute-names-of-a-table">
+<h2>get_attnames – get the attribute names of a table<a class="headerlink" href="#get-attnames-get-the-attribute-names-of-a-table" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.get_attnames">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">get_attnames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.get_attnames" title="Link to this definition">¶</a></dt>
+<dd><p>Get the attribute names of a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>table</strong> (<em>str</em>) – name of table</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an ordered dictionary mapping attribute names to type names</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Given the name of a table, digs out the set of attribute names.</p>
+<p>Returns a read-only dictionary of attribute names (the names are the keys,
+the values are the names of the attributes’ types) with the column names
+in the proper order if you iterate over it.</p>
+<p>By default, only a limited number of simple types will be returned.
+You can get the registered types instead, if enabled by calling the
+<a class="reference internal" href="#pg.DB.use_regtypes" title="pg.DB.use_regtypes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.use_regtypes()</span></code></a> method.</p>
+</section>
+<section id="get-generated-get-the-generated-columns-of-a-table">
+<h2>get_generated – get the generated columns of a table<a class="headerlink" href="#get-generated-get-the-generated-columns-of-a-table" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.get_generated">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">get_generated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.get_generated" title="Link to this definition">¶</a></dt>
+<dd><p>Get the generated columns of a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>table</strong> (<em>str</em>) – name of table</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an frozenset of column names</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Given the name of a table, digs out the set of generated columns.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.2.5.</span></p>
+</div>
+</section>
+<section id="has-table-privilege-check-table-privilege">
+<h2>has_table_privilege – check table privilege<a class="headerlink" href="#has-table-privilege-check-table-privilege" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.has_table_privilege">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">has_table_privilege</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">privilege</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.has_table_privilege" title="Link to this definition">¶</a></dt>
+<dd><p>Check whether current user has specified table privilege</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table</strong> (<em>str</em>) – the name of the table</p></li>
+<li><p><strong>privilege</strong> (<em>str</em>) – privilege to be checked – default is ‘select’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>whether current user has specified table privilege</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Returns True if the current user has the specified privilege for the table.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.0.</span></p>
+</div>
+</section>
+<section id="get-set-parameter-get-or-set-run-time-parameters">
+<h2>get/set_parameter – get or set  run-time parameters<a class="headerlink" href="#get-set-parameter-get-or-set-run-time-parameters" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.get_parameter">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">get_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.get_parameter" title="Link to this definition">¶</a></dt>
+<dd><p>Get the value of run-time parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parameter</strong> – the run-time parameter(s) to get</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the current value(s) of the run-time parameter(s)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str, list or dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Invalid parameter type(s)</p></li>
+<li><p><strong>pg.ProgrammingError</strong> – Invalid parameter name(s)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>If the parameter is a string, the return value will also be a string
+that is the current setting of the run-time parameter with that name.</p>
+<p>You can get several parameters at once by passing a list, set or dict.
+When passing a list of parameter names, the return value will be a
+corresponding list of parameter settings.  When passing a set of
+parameter names, a new dict will be returned, mapping these parameter
+names to their settings.  Finally, if you pass a dict as parameter,
+its values will be set to the current parameter settings corresponding
+to its keys.</p>
+<p>By passing the special name <code class="docutils literal notranslate"><span class="pre">'all'</span></code> as the parameter, you can get a dict
+of all existing configuration parameters.</p>
+<p>Note that you can request most of the important parameters also using
+<a class="reference internal" href="connection.html#pg.Connection.parameter" title="pg.Connection.parameter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.parameter()</span></code></a> which does not involve a database query,
+unlike <a class="reference internal" href="#pg.DB.get_parameter" title="pg.DB.get_parameter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.get_parameter()</span></code></a> and <a class="reference internal" href="#pg.DB.set_parameter" title="pg.DB.set_parameter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.set_parameter()</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.2.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.set_parameter">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">set_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">local</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.set_parameter" title="Link to this definition">¶</a></dt>
+<dd><p>Set the value of run-time parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parameter</strong> – the run-time parameter(s) to set</p></li>
+<li><p><strong>value</strong> – the value to set</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Invalid parameter type(s)</p></li>
+<li><p><strong>ValueError</strong> – Invalid value argument(s)</p></li>
+<li><p><strong>pg.ProgrammingError</strong> – Invalid parameter name(s) or values</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>If the parameter and the value are strings, the run-time parameter
+will be set to that value.  If no value or <em>None</em> is passed as a value,
+then the run-time parameter will be restored to its default value.</p>
+<p>You can set several parameters at once by passing a list of parameter
+names, together with a single value that all parameters should be
+set to or with a corresponding list of values.  You can also pass
+the parameters as a set if you only provide a single value.
+Finally, you can pass a dict with parameter names as keys.  In this
+case, you should not pass a value, since the values for the parameters
+will be taken from the dict.</p>
+<p>By passing the special name <code class="docutils literal notranslate"><span class="pre">'all'</span></code> as the parameter, you can reset
+all existing settable run-time parameters to their default values.</p>
+<p>If you set <em>local</em> to <cite>True</cite>, then the command takes effect for only the
+current transaction.  After <a class="reference internal" href="#pg.DB.commit" title="pg.DB.commit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.commit()</span></code></a> or <a class="reference internal" href="#pg.DB.rollback" title="pg.DB.rollback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.rollback()</span></code></a>,
+the session-level setting takes effect again.  Setting <em>local</em> to <cite>True</cite>
+will appear to have no effect if it is executed outside a transaction,
+since the transaction will end immediately.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.2.</span></p>
+</div>
+</section>
+<section id="begin-commit-rollback-savepoint-release-transaction-handling">
+<h2>begin/commit/rollback/savepoint/release – transaction handling<a class="headerlink" href="#begin-commit-rollback-savepoint-release-transaction-handling" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.begin">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">begin</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.begin" title="Link to this definition">¶</a></dt>
+<dd><p>Begin a transaction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mode</strong> (<em>str</em>) – an optional transaction mode such as ‘READ ONLY’</p>
+</dd>
+</dl>
+<p>This initiates a transaction block, that is, all following queries
+will be executed in a single transaction until <a class="reference internal" href="#pg.DB.commit" title="pg.DB.commit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.commit()</span></code></a>
+or <a class="reference internal" href="#pg.DB.rollback" title="pg.DB.rollback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.rollback()</span></code></a> is called.</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.1.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.start">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.start" title="Link to this definition">¶</a></dt>
+<dd><p>This is the same as the <a class="reference internal" href="#pg.DB.begin" title="pg.DB.begin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.begin()</span></code></a> method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.commit">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">commit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.commit" title="Link to this definition">¶</a></dt>
+<dd><p>Commit a transaction</p>
+<p>This commits the current transaction.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.end">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.end" title="Link to this definition">¶</a></dt>
+<dd><p>This is the same as the <a class="reference internal" href="#pg.DB.commit" title="pg.DB.commit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.commit()</span></code></a> method.</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.1.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.rollback">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">rollback</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.rollback" title="Link to this definition">¶</a></dt>
+<dd><p>Roll back a transaction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – optionally, roll back to the specified savepoint</p>
+</dd>
+</dl>
+<p>This rolls back the current transaction, discarding all its changes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.abort">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">abort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.abort" title="Link to this definition">¶</a></dt>
+<dd><p>This is the same as the <a class="reference internal" href="#pg.DB.rollback" title="pg.DB.rollback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.rollback()</span></code></a> method.</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.2.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.savepoint">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">savepoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.savepoint" title="Link to this definition">¶</a></dt>
+<dd><p>Define a new savepoint</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – the name to give to the new savepoint</p>
+</dd>
+</dl>
+<p>This establishes a new savepoint within the current transaction.</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.1.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.release">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">release</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.release" title="Link to this definition">¶</a></dt>
+<dd><p>Destroy a savepoint</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – the name of the savepoint to destroy</p>
+</dd>
+</dl>
+<p>This destroys a savepoint previously defined in the current transaction.</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.1.</span></p>
+</div>
+</section>
+<section id="get-get-a-row-from-a-database-table-or-view">
+<h2>get – get a row from a database table or view<a class="headerlink" href="#get-get-a-row-from-a-database-table-or-view" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.get">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">keyname</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.get" title="Link to this definition">¶</a></dt>
+<dd><p>Get a row from a database table or view</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table</strong> (<em>str</em>) – name of table or view</p></li>
+<li><p><strong>row</strong> – either a dictionary or the value to be looked up</p></li>
+<li><p><strong>keyname</strong> (<em>str</em>) – name of field to use as key (optional)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary - the keys are the attribute names,
+the values are the row values.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pg.ProgrammingError</strong> – table has no primary key or missing privilege</p></li>
+<li><p><strong>KeyError</strong> – missing key value for the row</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method is the basic mechanism to get a single row.  It assumes
+that the <em>keyname</em> specifies a unique row.  It must be the name of a
+single column or a tuple of column names.  If <em>keyname</em> is not specified,
+then the primary key for the table is used.</p>
+<p>If <em>row</em> is a dictionary, then the value for the key is taken from it.
+Otherwise, the row must be a single value or a tuple of values
+corresponding to the passed <em>keyname</em> or primary key.  The fetched row
+from the table will be returned as a new dictionary or used to replace
+the existing values if the row was passed as a dictionary.</p>
+<p>The OID is also put into the dictionary if the table has one, but
+in order to allow the caller to work with multiple tables, it is
+munged as <code class="docutils literal notranslate"><span class="pre">oid(table)</span></code> using the actual name of the table.</p>
+<p>Note that since PyGreSQL 5.0 this will return the value of an array
+type column as a Python list by default.</p>
+</section>
+<section id="insert-insert-a-row-into-a-database-table">
+<h2>insert – insert a row into a database table<a class="headerlink" href="#insert-insert-a-row-into-a-database-table" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.insert">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">col=val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.insert" title="Link to this definition">¶</a></dt>
+<dd><p>Insert a row into a database table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table</strong> (<em>str</em>) – name of table</p></li>
+<li><p><strong>row</strong> (<em>dict</em>) – optional dictionary of values</p></li>
+<li><p><strong>col</strong> – optional keyword arguments for updating the dictionary</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the inserted values in the database</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>pg.ProgrammingError</strong> – missing privilege or conflict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method inserts a row into a table.  If the optional dictionary is
+not supplied then the required values must be included as keyword/value
+pairs.  If a dictionary is supplied then any keywords provided will be
+added to or replace the entry in the dictionary.</p>
+<p>The dictionary is then reloaded with the values actually inserted in order
+to pick up values modified by rules, triggers, etc.</p>
+<p>Note that since PyGreSQL 5.0 it is possible to insert a value for an
+array type column by passing it as a Python list.</p>
+</section>
+<section id="update-update-a-row-in-a-database-table">
+<h2>update – update a row in a database table<a class="headerlink" href="#update-update-a-row-in-a-database-table" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.update">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">col=val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.update" title="Link to this definition">¶</a></dt>
+<dd><p>Update a row in a database table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table</strong> (<em>str</em>) – name of table</p></li>
+<li><p><strong>row</strong> (<em>dict</em>) – optional dictionary of values</p></li>
+<li><p><strong>col</strong> – optional keyword arguments for updating the dictionary</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the new row in the database</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>pg.ProgrammingError</strong> – table has no primary key or missing privilege</p></li>
+<li><p><strong>KeyError</strong> – missing key value for the row</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Similar to insert, but updates an existing row.  The update is based on
+the primary key of the table or the OID value as munged by <a class="reference internal" href="#pg.DB.get" title="pg.DB.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.get()</span></code></a>
+or passed as keyword.  The OID will take precedence if provided, so that it
+is possible to update the primary key itself.</p>
+<p>The dictionary is then modified to reflect any changes caused by the
+update due to triggers, rules, default values, etc.</p>
+<p>Like insert, the dictionary is optional and updates will be performed
+on the fields in the keywords.  There must be an OID or primary key either
+specified using the <code class="docutils literal notranslate"><span class="pre">'oid'</span></code> keyword or in the dictionary, in which case the
+OID must be munged.</p>
+</section>
+<section id="upsert-insert-a-row-with-conflict-resolution">
+<h2>upsert – insert a row with conflict resolution<a class="headerlink" href="#upsert-insert-a-row-with-conflict-resolution" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.upsert">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">upsert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">col=val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.upsert" title="Link to this definition">¶</a></dt>
+<dd><p>Insert a row into a database table with conflict resolution</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table</strong> (<em>str</em>) – name of table</p></li>
+<li><p><strong>row</strong> (<em>dict</em>) – optional dictionary of values</p></li>
+<li><p><strong>col</strong> – optional keyword arguments for specifying the update</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the new row in the database</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>pg.ProgrammingError</strong> – table has no primary key or missing privilege</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method inserts a row into a table, but instead of raising a
+ProgrammingError exception in case of violating a constraint or unique index,
+an update will be executed instead.  This will be performed as a
+single atomic operation on the database, so race conditions can be avoided.</p>
+<p>Like the insert method, the first parameter is the name of the table and the
+second parameter can be used to pass the values to be inserted as a dictionary.</p>
+<p>Unlike the insert und update statement, keyword parameters are not used to
+modify the dictionary, but to specify which columns shall be updated in case
+of a conflict, and in which way:</p>
+<p>A value of <cite>False</cite> or <cite>None</cite> means the column shall not be updated,
+a value of <cite>True</cite> means the column shall be updated with the value that
+has been proposed for insertion, i.e. has been passed as value in the
+dictionary.  Columns that are not specified by keywords but appear as keys
+in the dictionary are also updated like in the case keywords had been passed
+with the value <cite>True</cite>.</p>
+<p>So if in the case of a conflict you want to update every column that has been
+passed in the dictionary <cite>d</cite> , you would call <code class="docutils literal notranslate"><span class="pre">upsert(table,</span> <span class="pre">d)</span></code>.  If you
+don’t want to do anything in case of a conflict, i.e. leave the existing row
+as it is, call <code class="docutils literal notranslate"><span class="pre">upsert(table,</span> <span class="pre">d,</span> <span class="pre">**dict.fromkeys(d))</span></code>.</p>
+<p>If you need more fine-grained control of what gets updated, you can also pass
+strings in the keyword parameters.  These strings will be used as SQL
+expressions for the update columns.  In these expressions you can refer
+to the value that already exists in the table by writing the table prefix
+<code class="docutils literal notranslate"><span class="pre">included.</span></code> before the column name, and you can refer to the value that
+has been proposed for insertion by writing <code class="docutils literal notranslate"><span class="pre">excluded.</span></code> as table prefix.</p>
+<p>The dictionary is modified in any case to reflect the values in the database
+after the operation has completed.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The method uses the PostgreSQL “upsert” feature which is only available
+since PostgreSQL 9.5. With older PostgreSQL versions, you will get a
+ProgrammingError if you use this method.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+</section>
+<section id="query-execute-a-sql-command-string">
+<h2>query – execute a SQL command string<a class="headerlink" href="#query-execute-a-sql-command-string" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.query">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">arg1</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">arg2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...</span></span></em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.query" title="Link to this definition">¶</a></dt>
+<dd><p>Execute a SQL command string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> (<em>str</em>) – SQL command</p></li>
+<li><p><strong>arg*</strong> – optional positional arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>result values</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a>, None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – bad argument type, or too many arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+<li><p><strong>ValueError</strong> – empty SQL query or lost connection</p></li>
+<li><p><strong>pg.ProgrammingError</strong> – error in query</p></li>
+<li><p><strong>pg.InternalError</strong> – error during query processing</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Similar to the <a class="reference internal" href="connection.html#pg.Connection" title="pg.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Connection</span></code></a> function with the same name, except that
+positional arguments can be passed either as a single list or tuple, or as
+individual positional arguments.  These arguments will then be used as
+parameter values of parameterized queries.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Name? &quot;</span><span class="p">)</span>
+<span class="n">phone</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Phone? &quot;</span><span class="p">)</span>
+<span class="n">num_rows</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;update employees set phone=$2 where name=$1&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">,</span> <span class="n">phone</span><span class="p">)</span>
+<span class="c1"># or</span>
+<span class="n">num_rows</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;update employees set phone=$2 where name=$1&quot;</span><span class="p">,</span>
+    <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">phone</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="query-formatted-execute-a-formatted-sql-command-string">
+<h2>query_formatted – execute a formatted SQL command string<a class="headerlink" href="#query-formatted-execute-a-formatted-sql-command-string" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.query_formatted">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">query_formatted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">types</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">inline</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.query_formatted" title="Link to this definition">¶</a></dt>
+<dd><p>Execute a formatted SQL command string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> (<em>str</em>) – SQL command</p></li>
+<li><p><strong>parameters</strong> (<em>tuple</em><em>, </em><em>list</em><em> or </em><em>dict</em>) – the values of the parameters for the SQL command</p></li>
+<li><p><strong>types</strong> (<em>tuple</em><em>, </em><em>list</em><em> or </em><em>dict</em>) – optionally, the types of the parameters</p></li>
+<li><p><strong>inline</strong> (<em>bool</em>) – whether the parameters should be passed in the SQL</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a>, None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – bad argument type, or too many arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+<li><p><strong>ValueError</strong> – empty SQL query or lost connection</p></li>
+<li><p><strong>pg.ProgrammingError</strong> – error in query</p></li>
+<li><p><strong>pg.InternalError</strong> – error during query processing</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Similar to <a class="reference internal" href="#pg.DB.query" title="pg.DB.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.query()</span></code></a>, but using Python format placeholders of the form
+<code class="docutils literal notranslate"><span class="pre">%s</span></code> or <code class="docutils literal notranslate"><span class="pre">%(names)s</span></code> instead of PostgreSQL placeholders of the form <code class="docutils literal notranslate"><span class="pre">$1</span></code>.
+The parameters must be passed as a tuple, list or dict.  You can also pass a
+corresponding tuple, list or dict of database types in order to format the
+parameters properly in case there is ambiguity.</p>
+<p>If you set <em>inline</em> to True, the parameters will be sent to the database
+embedded in the SQL command, otherwise they will be sent separately.</p>
+<p>If you set <em>inline</em> to True or don’t pass any parameters, the command string
+can also include multiple SQL commands (separated by semicolons). You will
+only get the result for the last command in this case.</p>
+<p>Note that the adaptation and conversion of the parameters causes a certain
+performance overhead. Depending on the type of values, the overhead can be
+smaller for <em>inline</em> queries or if you pass the types of the parameters,
+so that they don’t need to be guessed from the values. For best performance,
+we recommend using a raw <a class="reference internal" href="#pg.DB.query" title="pg.DB.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.query()</span></code></a> or <a class="reference internal" href="#pg.DB.query_prepared" title="pg.DB.query_prepared"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.query_prepared()</span></code></a> if you
+are executing many of the same operations with different parameters.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Name? &quot;</span><span class="p">)</span>
+<span class="n">phone</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Phone? &quot;</span><span class="p">)</span>
+<span class="n">num_rows</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query_formatted</span><span class="p">(</span>
+    <span class="s2">&quot;update employees set phone=</span><span class="si">%s</span><span class="s2"> where name=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">(</span><span class="n">phone</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+<span class="c1"># or</span>
+<span class="n">num_rows</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query_formatted</span><span class="p">(</span>
+    <span class="s2">&quot;update employees set phone=</span><span class="si">%(phone)s</span><span class="s2"> where name=</span><span class="si">%(name)s</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="nb">dict</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">phone</span><span class="o">=</span><span class="n">phone</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Example with specification of types:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">db</span><span class="o">.</span><span class="n">query_formatted</span><span class="p">(</span>
+    <span class="s2">&quot;update orders set info=</span><span class="si">%s</span><span class="s2"> where id=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">({</span><span class="s1">&#39;customer&#39;</span><span class="p">:</span> <span class="s1">&#39;Joe&#39;</span><span class="p">,</span> <span class="s1">&#39;product&#39;</span><span class="p">:</span> <span class="s1">&#39;beer&#39;</span><span class="p">},</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">),</span>
+    <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="s1">&#39;int&#39;</span><span class="p">))</span>
+<span class="c1"># or</span>
+<span class="n">db</span><span class="o">.</span><span class="n">query_formatted</span><span class="p">(</span>
+    <span class="s2">&quot;update orders set info=</span><span class="si">%s</span><span class="s2"> where id=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">({</span><span class="s1">&#39;customer&#39;</span><span class="p">:</span> <span class="s1">&#39;Joe&#39;</span><span class="p">,</span> <span class="s1">&#39;product&#39;</span><span class="p">:</span> <span class="s1">&#39;beer&#39;</span><span class="p">},</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">),</span>
+    <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;json int&#39;</span><span class="p">))</span>
+<span class="c1"># or</span>
+<span class="n">db</span><span class="o">.</span><span class="n">query_formatted</span><span class="p">(</span>
+    <span class="s2">&quot;update orders set info=</span><span class="si">%(info)s</span><span class="s2"> where id=</span><span class="si">%(id)s</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">{</span><span class="s1">&#39;info&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;customer&#39;</span><span class="p">:</span> <span class="s1">&#39;Joe&#39;</span><span class="p">,</span> <span class="s1">&#39;product&#39;</span><span class="p">:</span> <span class="s1">&#39;beer&#39;</span><span class="p">},</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+    <span class="n">types</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;info&#39;</span><span class="p">:</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+</section>
+<section id="query-prepared-execute-a-prepared-statement">
+<h2>query_prepared – execute a prepared statement<a class="headerlink" href="#query-prepared-execute-a-prepared-statement" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.query_prepared">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">query_prepared</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">arg1</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">arg2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...</span></span></em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.query_prepared" title="Link to this definition">¶</a></dt>
+<dd><p>Execute a prepared statement</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of the prepared statement</p></li>
+<li><p><strong>arg*</strong> – optional positional arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>result values</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a>, None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – bad argument type, or too many arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+<li><p><strong>ValueError</strong> – empty SQL query or lost connection</p></li>
+<li><p><strong>pg.ProgrammingError</strong> – error in query</p></li>
+<li><p><strong>pg.InternalError</strong> – error during query processing</p></li>
+<li><p><strong>pg.OperationalError</strong> – prepared statement does not exist</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This methods works like the <a class="reference internal" href="#pg.DB.query" title="pg.DB.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.query()</span></code></a> method, except that instead of
+passing the SQL command, you pass the name of a prepared statement
+created previously using the <a class="reference internal" href="#pg.DB.prepare" title="pg.DB.prepare"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.prepare()</span></code></a> method.</p>
+<p>Passing an empty string or <em>None</em> as the name will execute the unnamed
+statement (see warning about the limited lifetime of the unnamed statement
+in <a class="reference internal" href="#pg.DB.prepare" title="pg.DB.prepare"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.prepare()</span></code></a>).</p>
+<p>The functionality of this method is equivalent to that of the SQL <code class="docutils literal notranslate"><span class="pre">EXECUTE</span></code>
+command.  Note that calling EXECUTE would require parameters to be sent
+inline, and be properly sanitized (escaped, quoted).</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.1.</span></p>
+</div>
+</section>
+<section id="prepare-create-a-prepared-statement">
+<h2>prepare – create a prepared statement<a class="headerlink" href="#prepare-create-a-prepared-statement" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.prepare">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">prepare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.prepare" title="Link to this definition">¶</a></dt>
+<dd><p>Create a prepared statement</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> (<em>str</em>) – SQL command</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – name of the prepared statement</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – bad argument types, or wrong number of arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+<li><p><strong>pg.ProgrammingError</strong> – error in query or duplicate query</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method creates a prepared statement with the specified name for later
+execution of the given command with the <a class="reference internal" href="#pg.DB.query_prepared" title="pg.DB.query_prepared"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.query_prepared()</span></code></a> method.</p>
+<p>If the name is empty or <em>None</em>, the unnamed prepared statement is used,
+in which case any pre-existing unnamed statement is replaced.</p>
+<p>Otherwise, if a prepared statement with the specified name is already defined
+in the current database session, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">pg.ProgrammingError</span></code> is raised.</p>
+<p>The SQL command may optionally contain positional parameters of the form
+<code class="docutils literal notranslate"><span class="pre">$1</span></code>, <code class="docutils literal notranslate"><span class="pre">$2</span></code>, etc instead of literal data.  The corresponding values
+must then be passed to the <a class="reference internal" href="connection.html#pg.Connection.query_prepared" title="pg.Connection.query_prepared"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.query_prepared()</span></code></a> method
+as positional arguments.</p>
+<p>The functionality of this method is equivalent to that of the SQL <code class="docutils literal notranslate"><span class="pre">PREPARE</span></code>
+command.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">db</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="s1">&#39;change phone&#39;</span><span class="p">,</span>
+    <span class="s2">&quot;update employees set phone=$2 where ein=$1&quot;</span><span class="p">)</span>
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">ein</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Employee ID? &quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ein</span><span class="p">:</span>
+        <span class="k">break</span>
+    <span class="n">phone</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Phone? &quot;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">query_prepared</span><span class="p">(</span><span class="s1">&#39;change phone&#39;</span><span class="p">,</span> <span class="n">ein</span><span class="p">,</span> <span class="n">phone</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We recommend always using named queries, since unnamed queries have a
+limited lifetime and can be automatically replaced or destroyed by
+various operations on the database.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.1.</span></p>
+</div>
+</section>
+<section id="describe-prepared-describe-a-prepared-statement">
+<h2>describe_prepared – describe a prepared statement<a class="headerlink" href="#describe-prepared-describe-a-prepared-statement" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.describe_prepared">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">describe_prepared</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.describe_prepared" title="Link to this definition">¶</a></dt>
+<dd><p>Describe a prepared statement</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of the prepared statement</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a></p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – bad argument type, or too many arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+<li><p><strong>pg.OperationalError</strong> – prepared statement does not exist</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method returns a <a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a> object describing the prepared
+statement with the given name.  You can also pass an empty name in order
+to describe the unnamed statement.  Information on the fields of the
+corresponding query can be obtained through the <a class="reference internal" href="query.html#pg.Query.listfields" title="pg.Query.listfields"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.listfields()</span></code></a>,
+<a class="reference internal" href="query.html#pg.Query.fieldname" title="pg.Query.fieldname"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.fieldname()</span></code></a> and <a class="reference internal" href="query.html#pg.Query.fieldnum" title="pg.Query.fieldnum"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.fieldnum()</span></code></a> methods.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.1.</span></p>
+</div>
+</section>
+<section id="delete-prepared-delete-a-prepared-statement">
+<h2>delete_prepared – delete a prepared statement<a class="headerlink" href="#delete-prepared-delete-a-prepared-statement" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.delete_prepared">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">delete_prepared</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.delete_prepared" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a prepared statement</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of the prepared statement</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – bad argument type, or too many arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+<li><p><strong>pg.OperationalError</strong> – prepared statement does not exist</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method deallocates a previously prepared SQL statement with the given
+name, or deallocates all prepared statements if you do not specify a name.
+Note that prepared statements are always deallocated automatically when the
+current session ends.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.1.</span></p>
+</div>
+</section>
+<section id="clear-clear-row-values-in-memory">
+<h2>clear – clear row values in memory<a class="headerlink" href="#clear-clear-row-values-in-memory" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.clear">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.clear" title="Link to this definition">¶</a></dt>
+<dd><p>Clear row values in memory</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table</strong> (<em>str</em>) – name of table</p></li>
+<li><p><strong>row</strong> (<em>dict</em>) – optional dictionary of values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an empty row</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method clears all the attributes to values determined by the types.
+Numeric types are set to 0, Booleans are set to <em>False</em>, and everything
+else is set to the empty string.  If the row argument is present, it is
+used as the row dictionary and any entries matching attribute names are
+cleared with everything else left unchanged.</p>
+<p>If the dictionary is not supplied a new one is created.</p>
+</section>
+<section id="delete-delete-a-row-from-a-database-table">
+<h2>delete – delete a row from a database table<a class="headerlink" href="#delete-delete-a-row-from-a-database-table" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.delete">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">col=val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a row from a database table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table</strong> (<em>str</em>) – name of table</p></li>
+<li><p><strong>row</strong> (<em>dict</em>) – optional dictionary of values</p></li>
+<li><p><strong>col</strong> – optional keyword arguments for updating the dictionary</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pg.ProgrammingError</strong> – table has no primary key,
+row is still referenced or missing privilege</p></li>
+<li><p><strong>KeyError</strong> – missing key value for the row</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method deletes the row from a table.  It deletes based on the
+primary key of the table or the OID value as munged by <a class="reference internal" href="#pg.DB.get" title="pg.DB.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.get()</span></code></a>
+or passed as keyword.  The OID will take precedence if provided.</p>
+<p>The return value is the number of deleted rows (i.e. 0 if the row did not
+exist and 1 if the row was deleted).</p>
+<p>Note that if the row cannot be deleted because e.g. it is still referenced
+by another table, this method will raise a ProgrammingError.</p>
+</section>
+<section id="truncate-quickly-empty-database-tables">
+<h2>truncate – quickly empty database tables<a class="headerlink" href="#truncate-quickly-empty-database-tables" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.truncate">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">truncate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">restart</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">cascade</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">only</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.truncate" title="Link to this definition">¶</a></dt>
+<dd><p>Empty a table or set of tables</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table</strong> (<em>str</em><em>, </em><em>list</em><em> or </em><em>set</em>) – the name of the table(s)</p></li>
+<li><p><strong>restart</strong> (<em>bool</em>) – whether table sequences should be restarted</p></li>
+<li><p><strong>cascade</strong> (<em>bool</em>) – whether referenced tables should also be truncated</p></li>
+<li><p><strong>only</strong> (<em>bool</em><em> or </em><em>list</em>) – whether only parent tables should be truncated</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method quickly removes all rows from the given table or set
+of tables.  It has the same effect as an unqualified DELETE on each
+table, but since it does not actually scan the tables it is faster.
+Furthermore, it reclaims disk space immediately, rather than requiring
+a subsequent VACUUM operation. This is most useful on large tables.</p>
+<p>If <em>restart</em> is set to <cite>True</cite>, sequences owned by columns of the truncated
+table(s) are automatically restarted.  If <em>cascade</em> is set to <cite>True</cite>, it
+also truncates all tables that have foreign-key references to any of
+the named tables.  If the parameter <em>only</em> is not set to <cite>True</cite>, all the
+descendant tables (if any) will also be truncated. Optionally, a <code class="docutils literal notranslate"><span class="pre">*</span></code>
+can be specified after the table name to explicitly indicate that
+descendant tables are included.  If the parameter <em>table</em> is a list,
+the parameter <em>only</em> can also be a list of corresponding boolean values.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.2.</span></p>
+</div>
+</section>
+<section id="get-as-list-dict-read-a-table-as-a-list-or-dictionary">
+<h2>get_as_list/dict – read a table as a list or dictionary<a class="headerlink" href="#get-as-list-dict-read-a-table-as-a-list-or-dictionary" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.get_as_list">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">get_as_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">what</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">where</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">scalar</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.get_as_list" title="Link to this definition">¶</a></dt>
+<dd><p>Get a table as a list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table</strong> (<em>str</em>) – the name of the table (the FROM clause)</p></li>
+<li><p><strong>what</strong> (<em>str</em><em>, </em><em>list</em><em>, </em><em>tuple</em><em> or </em><em>None</em>) – column(s) to be returned (the SELECT clause)</p></li>
+<li><p><strong>where</strong> (<em>str</em><em>, </em><em>list</em><em>, </em><em>tuple</em><em> or </em><em>None</em>) – conditions(s) to be fulfilled (the WHERE clause)</p></li>
+<li><p><strong>order</strong> (<em>str</em><em>, </em><em>list</em><em>, </em><em>tuple</em><em>, </em><em>False</em><em> or </em><em>None</em>) – column(s) to sort by (the ORDER BY clause)</p></li>
+<li><p><strong>limit</strong> (<em>int</em>) – maximum number of rows returned (the LIMIT clause)</p></li>
+<li><p><strong>offset</strong> (<em>int</em>) – number of rows to be skipped (the OFFSET clause)</p></li>
+<li><p><strong>scalar</strong> (<em>bool</em>) – whether only the first column shall be returned</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the content of the table as a list</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – the table name has not been specified</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This gets a convenient representation of the table as a list of named tuples
+in Python.  You only need to pass the name of the table (or any other SQL
+expression returning rows).  Note that by default this will return the full
+content of the table which can be huge and overflow your memory.  However, you
+can control the amount of data returned using the other optional parameters.</p>
+<p>The parameter <em>what</em> can restrict the query to only return a subset of the
+table columns.  The parameter <em>where</em> can restrict the query to only return a
+subset of the table rows.  The specified SQL expressions all need to be
+fulfilled for a row to get into the result.  The parameter <em>order</em> specifies
+the ordering of the rows.  If no ordering is specified, the result will be
+ordered by the primary key(s) or all columns if no primary key exists.
+You can set <em>order</em> to <em>False</em> if you don’t care about the ordering.
+The parameters <em>limit</em> and <em>offset</em> specify the maximum number of rows
+returned and a number of rows skipped over.</p>
+<p>If you set the <em>scalar</em> option to <em>True</em>, then instead of the named tuples
+you will get the first items of these tuples.  This is useful if the result
+has only one column anyway.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.get_as_dict">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">get_as_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">keyname</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">what</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">where</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">scalar</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.get_as_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Get a table as a dictionary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table</strong> (<em>str</em>) – the name of the table (the FROM clause)</p></li>
+<li><p><strong>keyname</strong> (<em>str</em><em>, </em><em>list</em><em>, </em><em>tuple</em><em> or </em><em>None</em>) – column(s) to be used as key(s) of the dictionary</p></li>
+<li><p><strong>what</strong> (<em>str</em><em>, </em><em>list</em><em>, </em><em>tuple</em><em> or </em><em>None</em>) – column(s) to be returned (the SELECT clause)</p></li>
+<li><p><strong>where</strong> (<em>str</em><em>, </em><em>list</em><em>, </em><em>tuple</em><em> or </em><em>None</em>) – conditions(s) to be fulfilled (the WHERE clause)</p></li>
+<li><p><strong>order</strong> (<em>str</em><em>, </em><em>list</em><em>, </em><em>tuple</em><em>, </em><em>False</em><em> or </em><em>None</em>) – column(s) to sort by (the ORDER BY clause)</p></li>
+<li><p><strong>limit</strong> (<em>int</em>) – maximum number of rows returned (the LIMIT clause)</p></li>
+<li><p><strong>offset</strong> (<em>int</em>) – number of rows to be skipped (the OFFSET clause)</p></li>
+<li><p><strong>scalar</strong> (<em>bool</em>) – whether only the first column shall be returned</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the content of the table as a list</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – the table name has not been specified</p></li>
+<li><p><strong>KeyError</strong> – keyname(s) are invalid or not part of the result</p></li>
+<li><p><strong>pg.ProgrammingError</strong> – no keyname(s) and table has no primary key</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method is similar to <a class="reference internal" href="#pg.DB.get_as_list" title="pg.DB.get_as_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.get_as_list()</span></code></a>, but returns the table as
+a Python dict instead of a Python list, which can be even more convenient.
+The primary key column(s) of the table will be used as the keys of the
+dictionary, while the other column(s) will be the corresponding values.
+The keys will be named tuples if the table has a composite primary key.
+The rows will be also named tuples unless the <em>scalar</em> option has been set
+to <em>True</em>.  With the optional parameter <em>keyname</em> you can specify a different
+set of columns to be used as the keys of the dictionary.</p>
+<p>The dictionary will be ordered using the order specified with the <em>order</em>
+parameter or the key column(s) if not specified.  You can set <em>order</em> to
+<em>False</em> if you don’t care about the ordering.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+</section>
+<section id="escape-literal-identifier-string-bytea-escape-for-sql">
+<h2>escape_literal/identifier/string/bytea – escape for SQL<a class="headerlink" href="#escape-literal-identifier-string-bytea-escape-for-sql" title="Link to this heading">¶</a></h2>
+<p>The following methods escape text or binary strings so that they can be
+inserted directly into an SQL command.  Except for <a class="reference internal" href="#pg.DB.escape_bytea" title="pg.DB.escape_bytea"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.escape_bytea()</span></code></a>,
+you don’t need to call these methods for the strings passed as parameters
+to <a class="reference internal" href="#pg.DB.query" title="pg.DB.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.query()</span></code></a>.  You also don’t need to call any of these methods
+when storing data using <a class="reference internal" href="#pg.DB.insert" title="pg.DB.insert"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.insert()</span></code></a> and similar.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.escape_literal">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">escape_literal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.escape_literal" title="Link to this definition">¶</a></dt>
+<dd><p>Escape a string for use within SQL as a literal constant</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – the string that is to be escaped</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the escaped string</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method escapes a string for use within an SQL command. This is useful
+when inserting data values as literal constants in SQL commands. Certain
+characters (such as quotes and backslashes) must be escaped to prevent them
+from being interpreted specially by the SQL parser.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.1.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.escape_identifier">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">escape_identifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.escape_identifier" title="Link to this definition">¶</a></dt>
+<dd><p>Escape a string for use within SQL as an identifier</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – the string that is to be escaped</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the escaped string</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method escapes a string for use as an SQL identifier, such as a table,
+column, or function name. This is useful when a user-supplied identifier
+might contain special characters that would otherwise be misinterpreted
+by the SQL parser, or when the identifier might contain upper case characters
+whose case should be preserved.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.1.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.escape_string">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">escape_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.escape_string" title="Link to this definition">¶</a></dt>
+<dd><p>Escape a string for use within SQL</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – the string that is to be escaped</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the escaped string</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Similar to the module function <a class="reference internal" href="module.html#pg.escape_string" title="pg.escape_string"><code class="xref py py-func docutils literal notranslate"><span class="pre">pg.escape_string()</span></code></a> with the same name,
+but the behavior of this method is adjusted depending on the connection
+properties (such as character encoding).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.escape_bytea">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">escape_bytea</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datastring</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.escape_bytea" title="Link to this definition">¶</a></dt>
+<dd><p>Escape binary data for use within SQL as type <code class="docutils literal notranslate"><span class="pre">bytea</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>datastring</strong> (<em>bytes/str</em>) – the binary data that is to be escaped</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the escaped string</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bytes/str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Similar to the module function <a class="reference internal" href="module.html#pg.escape_bytea" title="pg.escape_bytea"><code class="xref py py-func docutils literal notranslate"><span class="pre">pg.escape_bytea()</span></code></a> with the same name,
+but the behavior of this method is adjusted depending on the connection
+properties (in particular, whether standard-conforming strings are enabled).</p>
+</section>
+<section id="unescape-bytea-unescape-data-retrieved-from-the-database">
+<h2>unescape_bytea – unescape data retrieved from the database<a class="headerlink" href="#unescape-bytea-unescape-data-retrieved-from-the-database" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.unescape_bytea">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">unescape_bytea</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.unescape_bytea" title="Link to this definition">¶</a></dt>
+<dd><p>Unescape <code class="docutils literal notranslate"><span class="pre">bytea</span></code> data that has been retrieved as text</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – the <code class="docutils literal notranslate"><span class="pre">bytea</span></code> string that has been retrieved as text</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>byte string containing the binary data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Converts an escaped string representation of binary data stored as <code class="docutils literal notranslate"><span class="pre">bytea</span></code>
+into the raw byte string representing the binary data  – this is the reverse
+of <a class="reference internal" href="#pg.DB.escape_bytea" title="pg.DB.escape_bytea"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.escape_bytea()</span></code></a>.  Since the <a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a> results will already
+return unescaped byte strings, you normally don’t have to use this method.</p>
+</section>
+<section id="encode-decode-json-encode-and-decode-json-data">
+<h2>encode/decode_json – encode and decode JSON data<a class="headerlink" href="#encode-decode-json-encode-and-decode-json-data" title="Link to this heading">¶</a></h2>
+<p>The following methods can be used to encode end decode data in
+<a class="reference external" href="http://www.json.org/">JSON</a> format.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.encode_json">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">encode_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.encode_json" title="Link to this definition">¶</a></dt>
+<dd><p>Encode a Python object for use within SQL as type <code class="docutils literal notranslate"><span class="pre">json</span></code> or <code class="docutils literal notranslate"><span class="pre">jsonb</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>dict</em><em>, </em><em>list</em><em> or </em><em>None</em>) – Python object that shall be encoded to JSON format</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>string representation of the Python object in JSON format</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method serializes a Python object into a JSON formatted string that can
+be used within SQL.  You don’t need to use this method on the data stored
+with <a class="reference internal" href="#pg.DB.insert" title="pg.DB.insert"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.insert()</span></code></a> and similar, only if you store the data directly as
+part of an SQL command or parameter with <a class="reference internal" href="#pg.DB.query" title="pg.DB.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.query()</span></code></a>.  This is the same
+as the <code class="xref py py-func docutils literal notranslate"><span class="pre">json.dumps()</span></code> function from the standard library.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.decode_json">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">decode_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.decode_json" title="Link to this definition">¶</a></dt>
+<dd><p>Decode <code class="docutils literal notranslate"><span class="pre">json</span></code> or <code class="docutils literal notranslate"><span class="pre">jsonb</span></code> data that has been retrieved as text</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – JSON formatted string shall be decoded into a Python object</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Python object representing the JSON formatted string</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict, list or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method deserializes a JSON formatted string retrieved as text from the
+database to a Python object.  You normally don’t need to use this method as
+JSON data is automatically decoded by PyGreSQL.  If you don’t want the data
+to be decoded, then you can cast <code class="docutils literal notranslate"><span class="pre">json</span></code> or <code class="docutils literal notranslate"><span class="pre">jsonb</span></code> columns to <code class="docutils literal notranslate"><span class="pre">text</span></code>
+in PostgreSQL or you can set the decoding function to <em>None</em> or a different
+function using <a class="reference internal" href="module.html#pg.set_jsondecode" title="pg.set_jsondecode"><code class="xref py py-func docutils literal notranslate"><span class="pre">pg.set_jsondecode()</span></code></a>.  By default this is the same as
+the <code class="xref py py-func docutils literal notranslate"><span class="pre">json.loads()</span></code> function from the standard library.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+</section>
+<section id="use-regtypes-choose-usage-of-registered-type-names">
+<h2>use_regtypes – choose usage of registered type names<a class="headerlink" href="#use-regtypes-choose-usage-of-registered-type-names" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DB.use_regtypes">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">use_regtypes</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">regtypes</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.use_regtypes" title="Link to this definition">¶</a></dt>
+<dd><p>Determine whether registered type names shall be used</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>regtypes</strong> (<em>bool</em>) – if passed, set whether registered type names shall be used</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>whether registered type names are used</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>The <a class="reference internal" href="#pg.DB.get_attnames" title="pg.DB.get_attnames"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.get_attnames()</span></code></a> method can return either simplified “classic”
+type names (the default) or more fine-grained “registered” type names.
+Which kind of type names is used can be changed by calling
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.get_regtypes()</span></code>. If you pass a boolean, it sets whether registered
+type names shall be used. The method can also be used to check through its
+return value whether registered type names are currently used.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.1.</span></p>
+</div>
+</section>
+<section id="notification-handler-create-a-notification-handler">
+<h2>notification_handler – create a notification handler<a class="headerlink" href="#notification-handler-create-a-notification-handler" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pg.DB.notification_handler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">notification_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">arg_dict</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">stop_event</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DB.notification_handler" title="Link to this definition">¶</a></dt>
+<dd><p>Create a notification handler instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event</strong> (<em>str</em>) – the name of an event to listen for</p></li>
+<li><p><strong>callback</strong> – a callback function</p></li>
+<li><p><strong>arg_dict</strong> (<em>dict</em>) – an optional dictionary for passing arguments</p></li>
+<li><p><strong>timeout</strong> (<em>int</em><em>, </em><em>float</em><em> or </em><em>None</em>) – the time-out when waiting for notifications</p></li>
+<li><p><strong>stop_event</strong> (<em>str</em>) – an optional different name to be used as stop event</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method creates a <a class="reference internal" href="notification.html#pg.NotificationHandler" title="pg.NotificationHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">pg.NotificationHandler</span></code></a> object using the
+<a class="reference internal" href="#pg.DB" title="pg.DB"><code class="xref py py-class docutils literal notranslate"><span class="pre">DB</span></code></a> connection as explained under <a class="reference internal" href="notification.html"><span class="doc">The Notification Handler</span></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.1.1.</span></p>
+</div>
+</section>
+<section id="attributes-of-the-db-wrapper-class">
+<h2>Attributes of the DB wrapper class<a class="headerlink" href="#attributes-of-the-db-wrapper-class" title="Link to this heading">¶</a></h2>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.DB.db">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">db</span></span><a class="headerlink" href="#pg.DB.db" title="Link to this definition">¶</a></dt>
+<dd><p>The wrapped <a class="reference internal" href="connection.html#pg.Connection" title="pg.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Connection</span></code></a> object</p>
+</dd></dl>
+
+<p>You normally don’t need this, since all of the members can be accessed
+from the <a class="reference internal" href="#pg.DB" title="pg.DB"><code class="xref py py-class docutils literal notranslate"><span class="pre">DB</span></code></a> wrapper class as well.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.DB.dbname">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">dbname</span></span><a class="headerlink" href="#pg.DB.dbname" title="Link to this definition">¶</a></dt>
+<dd><p>The name of the database that the connection is using</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.DB.dbtypes">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">dbtypes</span></span><a class="headerlink" href="#pg.DB.dbtypes" title="Link to this definition">¶</a></dt>
+<dd><p>A dictionary with the various type names for the PostgreSQL types</p>
+</dd></dl>
+
+<p>This can be used for getting more information on the PostgreSQL database
+types or changing the typecast functions used for the connection.  See the
+description of the <a class="reference internal" href="db_types.html#pg.DbTypes" title="pg.DbTypes"><code class="xref py py-class docutils literal notranslate"><span class="pre">DbTypes</span></code></a> class for details.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.DB.adapter">
+<span class="sig-prename descclassname"><span class="pre">DB.</span></span><span class="sig-name descname"><span class="pre">adapter</span></span><a class="headerlink" href="#pg.DB.adapter" title="Link to this definition">¶</a></dt>
+<dd><p>A class with some helper functions for adapting parameters</p>
+</dd></dl>
+
+<p>This can be used for building queries with parameters.  You normally will
+not need this, as you can use the <a class="reference internal" href="#pg.DB.query_formatted" title="pg.DB.query_formatted"><code class="xref py py-class docutils literal notranslate"><span class="pre">DB.query_formatted</span></code></a> method.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/pygresql.png" alt="Logo of PyGreSQL"/>
+            </a></p>
+<h1 class="logo"><a href="../../index.html">PyGreSQL</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">About PyGreSQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../copyright.html">Copyright notice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../download/index.html">Download information</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">The PyGreSQL documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#contents">Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../community/index.html">PyGreSQL Development and Support</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">The PyGreSQL documentation</a><ul>
+  <li><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pg</span></code> — The Classic PyGreSQL Interface</a><ul>
+      <li>Previous: <a href="connection.html" title="previous chapter">Connection – The connection object</a></li>
+      <li>Next: <a href="query.html" title="next chapter">Query methods</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, The PyGreSQL team.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/contents/pg/db_wrapper.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

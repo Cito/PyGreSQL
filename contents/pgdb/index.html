@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>pgdb — The DB-API Compliant Interface &#8212; PyGreSQL 6.1.0</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=6340cb70"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="copyright" title="Copyright" href="../../copyright.html" />
+    <link rel="next" title="Introduction" href="introduction.html" />
+    <link rel="prev" title="Remarks on Adaptation and Typecasting" href="../pg/adaptation.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-pgdb">
+<span id="pgdb-the-db-api-compliant-interface"></span><h1><a class="reference internal" href="#module-pgdb" title="pgdb"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pgdb</span></code></a> — The DB-API Compliant Interface<a class="headerlink" href="#module-pgdb" title="Link to this heading">¶</a></h1>
+<section id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module.html">Module functions and constants</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module.html#connect-open-a-postgresql-connection">connect – Open a PostgreSQL connection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="module.html#pgdb.connect"><code class="docutils literal notranslate"><span class="pre">connect()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="module.html#get-set-reset-typecast-control-the-global-typecast-functions">get/set/reset_typecast – Control the global typecast functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="module.html#pgdb.get_typecast"><code class="docutils literal notranslate"><span class="pre">get_typecast()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="module.html#pgdb.set_typecast"><code class="docutils literal notranslate"><span class="pre">set_typecast()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="module.html#pgdb.reset_typecast"><code class="docutils literal notranslate"><span class="pre">reset_typecast()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="module.html#module-constants">Module constants</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="module.html#pgdb.apilevel"><code class="docutils literal notranslate"><span class="pre">apilevel</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="module.html#pgdb.threadsafety"><code class="docutils literal notranslate"><span class="pre">threadsafety</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="module.html#pgdb.paramstyle"><code class="docutils literal notranslate"><span class="pre">paramstyle</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="module.html#errors-raised-by-this-module">Errors raised by this module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="module.html#pgdb.Warning"><code class="docutils literal notranslate"><span class="pre">Warning</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="module.html#pgdb.Error"><code class="docutils literal notranslate"><span class="pre">Error</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="module.html#pgdb.InterfaceError"><code class="docutils literal notranslate"><span class="pre">InterfaceError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="module.html#pgdb.DatabaseError"><code class="docutils literal notranslate"><span class="pre">DatabaseError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="module.html#pgdb.DataError"><code class="docutils literal notranslate"><span class="pre">DataError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="module.html#pgdb.OperationalError"><code class="docutils literal notranslate"><span class="pre">OperationalError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="module.html#pgdb.IntegrityError"><code class="docutils literal notranslate"><span class="pre">IntegrityError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="module.html#pgdb.ProgrammingError"><code class="docutils literal notranslate"><span class="pre">ProgrammingError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="module.html#pgdb.NotSupportedError"><code class="docutils literal notranslate"><span class="pre">NotSupportedError</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="connection.html">Connection – The connection object</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="connection.html#pgdb.Connection"><code class="docutils literal notranslate"><span class="pre">Connection</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="connection.html#close-close-the-connection">close – close the connection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="connection.html#pgdb.Connection.close"><code class="docutils literal notranslate"><span class="pre">Connection.close()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="connection.html#commit-commit-the-connection">commit – commit the connection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="connection.html#pgdb.Connection.commit"><code class="docutils literal notranslate"><span class="pre">Connection.commit()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="connection.html#rollback-roll-back-the-connection">rollback – roll back the connection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="connection.html#pgdb.Connection.rollback"><code class="docutils literal notranslate"><span class="pre">Connection.rollback()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="connection.html#cursor-return-a-new-cursor-object">cursor – return a new cursor object</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="connection.html#pgdb.Connection.cursor"><code class="docutils literal notranslate"><span class="pre">Connection.cursor()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="connection.html#attributes-that-are-not-part-of-the-standard">Attributes that are not part of the standard</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="connection.html#pgdb.Connection.closed"><code class="docutils literal notranslate"><span class="pre">Connection.closed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="connection.html#pgdb.Connection.cursor_type"><code class="docutils literal notranslate"><span class="pre">Connection.cursor_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="connection.html#pgdb.Connection.type_cache"><code class="docutils literal notranslate"><span class="pre">Connection.type_cache</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="connection.html#pgdb.Connection.autocommit"><code class="docutils literal notranslate"><span class="pre">Connection.autocommit</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cursor.html">Cursor – The cursor object</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cursor.html#pgdb.Cursor"><code class="docutils literal notranslate"><span class="pre">Cursor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cursor.html#description-details-regarding-the-result-columns">description – details regarding the result columns</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cursor.html#pgdb.Cursor.description"><code class="docutils literal notranslate"><span class="pre">Cursor.description</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cursor.html#rowcount-number-of-rows-of-the-result">rowcount – number of rows of the result</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cursor.html#pgdb.Cursor.rowcount"><code class="docutils literal notranslate"><span class="pre">Cursor.rowcount</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cursor.html#close-close-the-cursor">close – close the cursor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cursor.html#pgdb.Cursor.close"><code class="docutils literal notranslate"><span class="pre">Cursor.close()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cursor.html#execute-execute-a-database-operation">execute – execute a database operation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cursor.html#pgdb.Cursor.execute"><code class="docutils literal notranslate"><span class="pre">Cursor.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cursor.html#executemany-execute-many-similar-database-operations">executemany – execute many similar database operations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cursor.html#pgdb.Cursor.executemany"><code class="docutils literal notranslate"><span class="pre">Cursor.executemany()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cursor.html#callproc-call-a-stored-procedure">callproc – Call a stored procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cursor.html#fetchone-fetch-next-row-of-the-query-result">fetchone – fetch next row of the query result</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cursor.html#pgdb.Cursor.fetchone"><code class="docutils literal notranslate"><span class="pre">Cursor.fetchone()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cursor.html#fetchmany-fetch-next-set-of-rows-of-the-query-result">fetchmany – fetch next set of rows of the query result</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cursor.html#pgdb.Cursor.fetchmany"><code class="docutils literal notranslate"><span class="pre">Cursor.fetchmany()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cursor.html#fetchall-fetch-all-rows-of-the-query-result">fetchall – fetch all rows of the query result</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cursor.html#pgdb.Cursor.fetchall"><code class="docutils literal notranslate"><span class="pre">Cursor.fetchall()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cursor.html#arraysize-the-number-of-rows-to-fetch-at-a-time">arraysize - the number of rows to fetch at a time</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cursor.html#pgdb.Cursor.arraysize"><code class="docutils literal notranslate"><span class="pre">Cursor.arraysize</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cursor.html#methods-and-attributes-that-are-not-part-of-the-standard">Methods and attributes that are not part of the standard</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cursor.html#pgdb.Cursor.copy_from"><code class="docutils literal notranslate"><span class="pre">Cursor.copy_from()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cursor.html#pgdb.Cursor.copy_to"><code class="docutils literal notranslate"><span class="pre">Cursor.copy_to()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cursor.html#pgdb.Cursor.row_factory"><code class="docutils literal notranslate"><span class="pre">Cursor.row_factory()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cursor.html#pgdb.Cursor.build_row_factory"><code class="docutils literal notranslate"><span class="pre">Cursor.build_row_factory()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cursor.html#pgdb.Cursor.colnames"><code class="docutils literal notranslate"><span class="pre">Cursor.colnames</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cursor.html#pgdb.Cursor.coltypes"><code class="docutils literal notranslate"><span class="pre">Cursor.coltypes</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="types.html">Type – Type objects and constructors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="types.html#type-constructors">Type constructors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="types.html#pgdb.Date"><code class="docutils literal notranslate"><span class="pre">Date()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="types.html#pgdb.Time"><code class="docutils literal notranslate"><span class="pre">Time()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="types.html#pgdb.Timestamp"><code class="docutils literal notranslate"><span class="pre">Timestamp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="types.html#pgdb.DateFromTicks"><code class="docutils literal notranslate"><span class="pre">DateFromTicks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="types.html#pgdb.TimeFromTicks"><code class="docutils literal notranslate"><span class="pre">TimeFromTicks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="types.html#pgdb.TimestampFromTicks"><code class="docutils literal notranslate"><span class="pre">TimestampFromTicks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="types.html#pgdb.Binary"><code class="docutils literal notranslate"><span class="pre">Binary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="types.html#pgdb.Interval"><code class="docutils literal notranslate"><span class="pre">Interval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="types.html#pgdb.Uuid"><code class="docutils literal notranslate"><span class="pre">Uuid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="types.html#pgdb.Hstore"><code class="docutils literal notranslate"><span class="pre">Hstore()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="types.html#pgdb.Json"><code class="docutils literal notranslate"><span class="pre">Json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="types.html#pgdb.Literal"><code class="docutils literal notranslate"><span class="pre">Literal()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="types.html#type-objects">Type objects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="types.html#pgdb.DbType"><code class="docutils literal notranslate"><span class="pre">DbType</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="typecache.html">TypeCache – The internal cache for database types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="typecache.html#pgdb.TypeCache"><code class="docutils literal notranslate"><span class="pre">TypeCache</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="typecache.html#pgdb.TypeCache.get_fields"><code class="docutils literal notranslate"><span class="pre">TypeCache.get_fields()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="typecache.html#pgdb.TypeCache.get_typecast"><code class="docutils literal notranslate"><span class="pre">TypeCache.get_typecast()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="typecache.html#pgdb.TypeCache.set_typecast"><code class="docutils literal notranslate"><span class="pre">TypeCache.set_typecast()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="typecache.html#pgdb.TypeCache.reset_typecast"><code class="docutils literal notranslate"><span class="pre">TypeCache.reset_typecast()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="typecache.html#pgdb.TypeCache.typecast"><code class="docutils literal notranslate"><span class="pre">TypeCache.typecast()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="adaptation.html">Remarks on Adaptation and Typecasting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="adaptation.html#supported-data-types">Supported data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptation.html#adaptation-of-parameters">Adaptation of parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptation.html#typecasting-to-python">Typecasting to Python</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/pygresql.png" alt="Logo of PyGreSQL"/>
+            </a></p>
+<h1 class="logo"><a href="../../index.html">PyGreSQL</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">About PyGreSQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../copyright.html">Copyright notice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../download/index.html">Download information</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">The PyGreSQL documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#contents">Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../community/index.html">PyGreSQL Development and Support</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">The PyGreSQL documentation</a><ul>
+      <li>Previous: <a href="../pg/adaptation.html" title="previous chapter">Remarks on Adaptation and Typecasting</a></li>
+      <li>Next: <a href="introduction.html" title="next chapter">Introduction</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, The PyGreSQL team.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/contents/pgdb/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

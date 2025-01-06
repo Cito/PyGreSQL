@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>ChangeLog &#8212; PyGreSQL 6.1.0</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=6340cb70"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="copyright" title="Copyright" href="../copyright.html" />
+    <link rel="next" title="General PyGreSQL programming information" href="general.html" />
+    <link rel="prev" title="Installation" href="install.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="changelog">
+<h1>ChangeLog<a class="headerlink" href="#changelog" title="Link to this heading">¶</a></h1>
+<section id="version-6-1-0-2024-12-05">
+<h2>Version 6.1.0 (2024-12-05)<a class="headerlink" href="#version-6-1-0-2024-12-05" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Support Python 3.13 and PostgreSQL 17.</p></li>
+</ul>
+</section>
+<section id="version-6-0-1-2024-04-19">
+<h2>Version 6.0.1 (2024-04-19)<a class="headerlink" href="#version-6-0-1-2024-04-19" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Properly adapt falsy JSON values (#86)</p></li>
+</ul>
+</section>
+<section id="version-6-0-2023-10-03">
+<h2>Version 6.0 (2023-10-03)<a class="headerlink" href="#version-6-0-2023-10-03" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Tested with the recent releases of Python 3.12 and PostgreSQL 16.</p></li>
+<li><p>Make pyproject.toml the only source of truth for the version number.</p></li>
+<li><p>Please also note the changes already made in version 6.0b1.</p></li>
+</ul>
+</section>
+<section id="version-6-0b1-2023-09-06">
+<h2>Version 6.0b1 (2023-09-06)<a class="headerlink" href="#version-6-0b1-2023-09-06" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Officially support Python 3.12 and PostgreSQL 16 (tested with rc versions).</p></li>
+<li><p>Removed support for Python versions older than 3.7 (released June 2017)
+and PostgreSQL older than version 10 (released October 2017).</p></li>
+<li><p>Converted the standalone modules <cite>pg</cite> and <cite>pgdb</cite> to packages with
+several submodules each. The C extension module is now part of the
+<cite>pg</cite> package and wrapped into the pure Python module <cite>pg.core</cite>.</p></li>
+<li><p>Added type hints and included a stub file for the C extension module.</p></li>
+<li><p>Added method <cite>pkeys()</cite> to the <cite>pg.DB</cite> object.</p></li>
+<li><p>Removed deprecated function <cite>pg.pgnotify()</cite>.</p></li>
+<li><p>Removed deprecated method <cite>ntuples()</cite> of the <cite>pg.Query</cite> object.</p></li>
+<li><p>Renamed <cite>pgdb.Type</cite> to <cite>pgdb.DbType</cite> to avoid confusion with <cite>typing.Type</cite>.</p></li>
+<li><p><cite>pg</cite> and <cite>pgdb</cite> now use a shared row factory cache.</p></li>
+<li><p>The function  <cite>set_row_factory_size()</cite> has been removed. The row cache is now
+available as a <cite>RowCache</cite> class with methods <cite>change_size()</cite> and <cite>clear()</cite>.</p></li>
+<li><p>Modernized code and tools for development, testing, linting and building.</p></li>
+</ul>
+</section>
+<section id="version-5-2-5-2023-08-28">
+<h2>Version 5.2.5 (2023-08-28)<a class="headerlink" href="#version-5-2-5-2023-08-28" title="Link to this heading">¶</a></h2>
+<ul>
+<li><p>This version officially supports the new Python 3.11 and PostgreSQL 15.</p></li>
+<li><p>Two more improvements in the <cite>inserttable()</cite> method of the <cite>pg</cite> module
+(thanks to Justin Pryzby for this contribution):</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>error handling has been improved (#72)</p></li>
+<li><p>the method now returns the number of inserted rows (#73)</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><dl class="simple">
+<dt>Another improvement in the <cite>pg</cite> module (#83):</dt><dd><ul class="simple">
+<li><p>generated columns can be requested with the <cite>get_generated()</cite> method</p></li>
+<li><p>generated columns are ignored by the insert, update and upsert method</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Avoid internal query and error when casting the <cite>sql_identifier</cite> type (#82)</p></li>
+<li><p>Fix issue with multiple calls of <cite>getresult()</cite> after <cite>send_query()</cite> (#80)</p></li>
+</ul>
+</section>
+<section id="version-5-2-4-2022-03-26">
+<h2>Version 5.2.4 (2022-03-26)<a class="headerlink" href="#version-5-2-4-2022-03-26" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Three more fixes in the <cite>inserttable()</cite> method of the <cite>pg</cite> module:</dt><dd><ul>
+<li><p><cite>inserttable()</cite> failed to escape carriage return (#68)</p></li>
+<li><p>Allow larger row sizes up to 64 KB (#69)</p></li>
+<li><p>Fix use after free issue in <cite>inserttable()</cite> (#71)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Replace obsolete functions for copy used internally (#59).
+Therefore, <cite>getline()</cite> now does not return <cite>.</cite> at the end any more.</p></li>
+</ul>
+</section>
+<section id="version-5-2-3-2022-01-30">
+<h2>Version 5.2.3 (2022-01-30)<a class="headerlink" href="#version-5-2-3-2022-01-30" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>This version officially supports the new Python 3.10 and PostgreSQL 14.</p></li>
+<li><dl class="simple">
+<dt>Some improvements and fixes in the <cite>inserttable()</cite> method of the <cite>pg</cite> module:</dt><dd><ul>
+<li><p>Sync with <cite>PQendcopy()</cite> when there was an error (#60)</p></li>
+<li><p>Allow specifying a schema in the table name (#61)</p></li>
+<li><p>Improved check for internal result (#62)</p></li>
+<li><p>Catch buffer overflows when building the copy command</p></li>
+<li><p>Data can now be passed as an iterable, not just list or tuple (#66)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Some more fixes in the <cite>pg</cite> module:</dt><dd><ul>
+<li><p>Fix upsert with limited number of columns (#58).</p></li>
+<li><p>Fix argument handling of <cite>is/set_non_blocking()</cite>.</p></li>
+<li><p>Add missing <cite>get/set_typecasts</cite> in list of exports.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Fixed a reference counting issue when casting JSON columns (#57).</p></li>
+</ul>
+</section>
+<section id="version-5-2-2-2020-12-09">
+<h2>Version 5.2.2 (2020-12-09)<a class="headerlink" href="#version-5-2-2-2020-12-09" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Added a missing adapter method for UUIDs in the classic <cite>pg</cite> module.</p></li>
+<li><p>Performance optimizations for <cite>fetchmany()</cite> in the <cite>pgdb</cite> module (#51).</p></li>
+<li><p>Fixed a reference counting issue in the <cite>cast_array/record</cite> methods (#52).</p></li>
+<li><p>Ignore incompatible libpq.dll in Windows PATH for Python &gt;= 3.8 (#53).</p></li>
+</ul>
+</section>
+<section id="version-5-2-1-2020-09-25">
+<h2>Version 5.2.1 (2020-09-25)<a class="headerlink" href="#version-5-2-1-2020-09-25" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>This version officially supports the new Python 3.9 and PostgreSQL 13.</p></li>
+<li><p>The <cite>copy_to()</cite> and <cite>copy_from()</cite> methods in the pgdb module now also work
+with table names containing schema qualifiers (#47).</p></li>
+</ul>
+</section>
+<section id="version-5-2-2020-06-21">
+<h2>Version 5.2 (2020-06-21)<a class="headerlink" href="#version-5-2-2020-06-21" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>We now require Python version 2.7 or 3.5 and newer.</p></li>
+<li><p>All Python code is now tested with flake8 and made PEP8 compliant.</p></li>
+<li><dl class="simple">
+<dt>Changes to the classic PyGreSQL module (pg):</dt><dd><ul>
+<li><p>New module level function <cite>get_pqlib_version()</cite> that gets the version
+of the pqlib used by PyGreSQL (needs PostgreSQL &gt;= 9.1 on the client).</p></li>
+<li><p>New query method <cite>memsize()</cite> that gets the memory size allocated by
+the query (needs PostgreSQL &gt;= 12 on the client).</p></li>
+<li><p>New query method <cite>fieldinfo()</cite> that gets name and type information for
+one or all field(s) of the query. Contributed by Justin Pryzby (#39).</p></li>
+<li><p>Experimental support for asynchronous command processing.
+Additional connection parameter <cite>nowait</cite>, and connection methods
+<cite>send_query()</cite>, <cite>poll()</cite>, <cite>set_non_blocking()</cite>, <cite>is_non_blocking()</cite>.
+Generously contributed by Patrick TJ McPhee (#19).</p></li>
+<li><p>The <cite>types</cite> parameter of <cite>format_query</cite> can now be passed as a string
+that will be split on whitespace when values are passed as a sequence,
+and the types can now also be specified using actual Python types
+instead of type names. Suggested by Justin Pryzby (#38).</p></li>
+<li><p>The <cite>inserttable()</cite> method now accepts an optional column list that will
+be passed on to the COPY command. Contributed by Justin Pryzby (#24).</p></li>
+<li><p>The <cite>DBTypes</cite> class now also includes the <cite>typlen</cite> attribute with
+information about the size of the type (contributed by Justin Pryzby).</p></li>
+<li><p>Large objects on the server are not closed any more when they are
+deallocated as Python objects, since this could cause several problems.
+Bug report and analysis by Justin Pryzby (#30).</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Changes to the DB-API 2 module (pgdb):</dt><dd><ul>
+<li><p>When using Python 2, errors are now derived from StandardError
+instead of Exception, as required by the DB-API 2 compliance test.</p></li>
+<li><p>Connection arguments containing single quotes caused problems
+(reported and fixed by Tyler Ramer and Jamie McAtamney).</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="version-5-1-2-2020-04-19">
+<h2>Version 5.1.2 (2020-04-19)<a class="headerlink" href="#version-5-1-2-2020-04-19" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Improved handling of build_ext options for disabling certain features.</p></li>
+<li><p>Avoid compiler warnings with proper casts. This should solve problems
+when building PyGreSQL on MaCOS.</p></li>
+<li><p>Export only the public API on wildcard imports</p></li>
+</ul>
+</section>
+<section id="version-5-1-1-2020-03-05">
+<h2>Version 5.1.1 (2020-03-05)<a class="headerlink" href="#version-5-1-1-2020-03-05" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>This version officially supports the new Python 3.8 and PostgreSQL 12.</p></li>
+<li><p>This version changes internal queries so that they cannot be exploited using
+a PostgreSQL security vulnerability described as CVE-2018-1058.</p></li>
+<li><p>Removed NO_PQSOCKET switch which is not needed any longer.</p></li>
+<li><p>Fixed documentation for other compilation options which had been renamed.</p></li>
+<li><p>Started using GitHub as development platform.</p></li>
+</ul>
+</section>
+<section id="version-5-1-2019-05-17">
+<h2>Version 5.1 (2019-05-17)<a class="headerlink" href="#version-5-1-2019-05-17" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Changes to the classic PyGreSQL module (pg):</dt><dd><ul>
+<li><p>Support for prepared statements (following a suggestion and first
+implementation by Justin Pryzby on the mailing list).</p></li>
+<li><p>DB wrapper objects based on existing connections can now be closed and
+reopened properly (but the underlying connection will not be affected).</p></li>
+<li><p>The query object can now be used as an iterator similar to
+query.getresult() and will then yield the rows as tuples.
+Thanks to Justin Pryzby for the proposal and most of the implementation.</p></li>
+<li><p>Deprecated query.ntuples() in the classic API, since len(query) can now
+be used and returns the same number.</p></li>
+<li><p>The i-th row of the result can now be accessed as <cite>query[i]</cite>.</p></li>
+<li><p>New method query.scalarresult() that gets only the first field of each
+row as a list of scalar values.</p></li>
+<li><p>New methods query.one(), query.onenamed(), query.onedict() and
+query.onescalar() that fetch only one row from the result or None
+if there are no more rows, similar to the cursor.fetchone()
+method in DB-API 2.</p></li>
+<li><p>New methods query.single(), query.singlenamed(), query.singledict() and
+query.singlescalar() that fetch only one row from the result, and raise
+an error if the result does not have exactly one row.</p></li>
+<li><p>New methods query.dictiter(), query.namediter() and query.scalariter()
+returning the same values as query.dictresult(), query.namedresult()
+and query.scalarresult(), but as iterables instead of lists. This avoids
+creating a Python list of all results and can be slightly more efficient.</p></li>
+<li><p>Removed pg.get/set_namedresult. You can configure the named tuples
+factory with the pg.set_row_factory_size() function and change the
+implementation with pg.set_query_helpers(), but this is not recommended
+and this function is not part of the official API.</p></li>
+<li><p>Added new connection attributes <cite>socket</cite>, <cite>backend_pid</cite>, <cite>ssl_in_use</cite>
+and <cite>ssl_attributes</cite> (the latter need PostgreSQL &gt;= 9.5 on the client).</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Changes to the DB-API 2 module (pgdb):</dt><dd><ul>
+<li><p>Connections now have an <cite>autocommit</cite> attribute which is set to <cite>False</cite>
+by default but can be set to <cite>True</cite> to switch to autocommit mode where
+no transactions are started and calling commit() is not required. Note
+that this is not part of the DB-API 2 standard.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="version-5-0-7-2019-05-17">
+<h2>Version 5.0.7 (2019-05-17)<a class="headerlink" href="#version-5-0-7-2019-05-17" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>This version officially supports the new PostgreSQL 11.</p></li>
+<li><p>Fixed a bug in parsing array subscript ranges (reported by Justin Pryzby).</p></li>
+<li><p>Fixed an issue when deleting a DB wrapper object with the underlying
+connection already closed (bug report by Jacob Champion).</p></li>
+</ul>
+</section>
+<section id="version-5-0-6-2018-07-29">
+<h2>Version 5.0.6 (2018-07-29)<a class="headerlink" href="#version-5-0-6-2018-07-29" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>This version officially supports the new Python 3.7.</p></li>
+<li><p>Correct trove classifier for the PostgreSQL License.</p></li>
+</ul>
+</section>
+<section id="version-5-0-5-2018-04-25">
+<h2>Version 5.0.5 (2018-04-25)<a class="headerlink" href="#version-5-0-5-2018-04-25" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>This version officially supports the new PostgreSQL 10.</p></li>
+<li><p>The memory for the string with the number of rows affected by a classic pg
+module query() was already freed (bug report and fix by Peifeng Qiu).</p></li>
+</ul>
+</section>
+<section id="version-5-0-4-2017-07-23">
+<h2>Version 5.0.4 (2017-07-23)<a class="headerlink" href="#version-5-0-4-2017-07-23" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>This version officially supports the new Python 3.6 and PostgreSQL 9.6.</p></li>
+<li><p>query_formatted() can now be used without parameters.</p></li>
+<li><p>The automatic renaming of columns that are invalid as field names of
+named tuples now works more accurately in Python 2.6 and 3.0.</p></li>
+<li><p>Fixed error checks for unlink() and export() methods of large objects
+(bug report by Justin Pryzby).</p></li>
+<li><p>Fixed a compilation issue under OS X (bug report by Josh Johnston).</p></li>
+</ul>
+</section>
+<section id="version-5-0-3-2016-12-10">
+<h2>Version 5.0.3 (2016-12-10)<a class="headerlink" href="#version-5-0-3-2016-12-10" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>It is now possible to use a custom array cast function by changing
+the type caster for the ‘anyarray’ type. For instance, by calling
+set_typecast(‘anyarray’, lambda v, c: v) you can have arrays returned
+as strings instead of lists. Note that in the pg module, you can also
+call set_array(False) in order to return arrays as strings.</p></li>
+<li><p>The namedtuple classes used for the rows of query results are now cached
+and reused internally, since creating namedtuples classes in Python is a
+somewhat expensive operation. By default the cache has a size of 1024
+entries, but this can be changed with the set_row_factory_size() function.
+In certain cases this change can notably improve the performance.</p></li>
+<li><p>The namedresult() method in the classic API now also tries to rename
+columns that would result in invalid field names.</p></li>
+</ul>
+</section>
+<section id="version-5-0-2-2016-09-13">
+<h2>Version 5.0.2 (2016-09-13)<a class="headerlink" href="#version-5-0-2-2016-09-13" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Fixed an infinite recursion problem in the DB wrapper class of the classic
+module that could occur when the underlying connection could not be properly
+opened (bug report by Justin Pryzby).</p></li>
+</ul>
+</section>
+<section id="version-5-0-1-2016-08-18">
+<h2>Version 5.0.1 (2016-08-18)<a class="headerlink" href="#version-5-0-1-2016-08-18" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>The update() and delete() methods of the DB wrapper now use the OID instead
+of the primary key if both are provided. This restores backward compatibility
+with PyGreSQL 4.x and allows updating the primary key itself if an OID exists.</p></li>
+<li><p>The connect() function of the DB API 2.0 module now accepts additional keyword
+parameters such as “application_name” which will be passed on to PostgreSQL.</p></li>
+<li><p>PyGreSQL now adapts some queries to be able to access older PostgreSQL 8.x
+databases (as suggested on the mailing list by Andres Mejia). However, these
+old versions of PostgreSQL are not officially supported and tested any more.</p></li>
+<li><p>Fixed an issue with Postgres types that have an OID &gt;= 0x80000000 (reported
+on the mailing list by Justin Pryzby).</p></li>
+<li><p>Allow extra values that are not used in the command in the parameter dict
+passed to the query_formatted() method (as suggested by Justin Pryzby).</p></li>
+<li><p>Improved handling of empty arrays in the classic module.</p></li>
+<li><p>Unused classic connections were not properly garbage collected which could
+cause memory leaks (reported by Justin Pryzby).</p></li>
+<li><p>Made C extension compatible with MSVC 9 again (this was needed to compile for
+Python 2 on Windows).</p></li>
+</ul>
+</section>
+<section id="version-5-0-2016-03-20">
+<h2>Version 5.0 (2016-03-20)<a class="headerlink" href="#version-5-0-2016-03-20" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>This version now runs on both Python 2 and Python 3.</p></li>
+<li><p>The supported versions are Python 2.6 to 2.7, and 3.3 to 3.5.</p></li>
+<li><p>PostgreSQL is supported in all versions from 9.0 to 9.5.</p></li>
+<li><dl class="simple">
+<dt>Changes in the classic PyGreSQL module (pg):</dt><dd><ul>
+<li><p>The classic interface got two new methods get_as_list() and get_as_dict()
+returning a database table as a Python list or dict. The amount of data
+returned can be controlled with various parameters.</p></li>
+<li><p>A method upsert() has been added to the DB wrapper class that utilizes
+the “upsert” feature that is new in PostgreSQL 9.5. The new method nicely
+complements the existing get/insert/update/delete() methods.</p></li>
+<li><p>When using insert/update/upsert(), you can now pass PostgreSQL arrays as
+lists and PostgreSQL records as tuples in the classic module.</p></li>
+<li><p>Conversely, when the query method returns a PostgreSQL array, it is passed
+to Python as a list. PostgreSQL records are converted to named tuples as
+well, but only if you use one of the get/insert/update/delete() methods.
+PyGreSQL uses a new fast built-in parser to achieve this. The automatic
+conversion of arrays to lists can be disabled with set_array(False).</p></li>
+<li><p>The pkey() method of the classic interface now returns tuples instead of
+frozensets, with the same order of columns as the primary key index.</p></li>
+<li><p>Like the DB-API 2 module, the classic module now also returns bool values
+from the database as Python bool objects instead of strings. You can
+still restore the old behavior by calling set_bool(False).</p></li>
+<li><p>Like the DB-API 2 module, the classic module now also returns bytea
+data fetched from the database as byte strings, so you don’t need to
+call unescape_bytea() any more. This has been made configurable though,
+and you can restore the old behavior by calling set_bytea_escaped(True).</p></li>
+<li><p>A method set_jsondecode() has been added for changing or removing the
+function that automatically decodes JSON data coming from the database.
+By default, decoding JSON is now enabled and uses the decoder function
+in the standard library with its default parameters.</p></li>
+<li><p>The table name that is affixed to the name of the OID column returned
+by the get() method of the classic interface will not automatically
+be fully qualified any more. This reduces overhead from the interface,
+but it means you must always write the table name in the same way when
+you are using tables with OIDs and call methods that make use of these.
+Also, OIDs are now only used when access via primary key is not possible.
+Note that OIDs are considered deprecated anyway, and they are not created
+by default any more in PostgreSQL 8.1 and later.</p></li>
+<li><p>The internal caching and automatic quoting of class names in the classic
+interface has been simplified and improved, it should now perform better
+and use less memory. Also, overhead for quoting values in the DB wrapper
+methods has been reduced and security has been improved by passing the
+values to libpq separately as parameters instead of inline.</p></li>
+<li><p>It is now possible to use the registered type names instead of the
+more coarse-grained type names that are used by default in PyGreSQL,
+without breaking any of the mechanisms for quoting and typecasting,
+which rely on the type information. This is achieved while maintaining
+simplicity and backward compatibility by augmenting the type name string
+objects with all the necessary information under the cover. To switch
+registered type names on or off (this is the default), call the DB
+wrapper method use_regtypes().</p></li>
+<li><p>A new method query_formatted() has been added to the DB wrapper class
+that allows using the format specifications from Python. A flag “inline”
+can be set to specify whether parameters should be sent to the database
+separately or formatted into the SQL.</p></li>
+<li><p>A new type helper Bytea() has been added.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Changes in the DB-API 2 module (pgdb):</dt><dd><ul>
+<li><p>The DB-API 2 module now always returns result rows as named tuples
+instead of simply lists as before. The documentation explains how
+you can restore the old behavior or use custom row objects instead.</p></li>
+<li><p>Various classes used by the classic and DB-API 2 modules have been
+renamed to become simpler, more intuitive and in line with the names
+used in the DB-API 2 documentation. Since the API provides objects of
+these types only through constructor functions, this should not cause
+any incompatibilities.</p></li>
+<li><p>The DB-API 2 module now supports the callproc() cursor method. Note
+that output parameters are currently not replaced in the return value.</p></li>
+<li><p>The DB-API 2 module now supports copy operations between data streams
+on the client and database tables via the COPY command of PostgreSQL.
+The cursor method copy_from() can be used to copy data from the database
+to the client, and the cursor method copy_to() can be used to copy data
+from the client to the database.</p></li>
+<li><p>The 7-tuples returned by the description attribute of a pgdb cursor
+are now named tuples, i.e. their elements can be also accessed by name.
+The column names and types can now also be requested through the
+colnames and coltypes attributes, which are not part of DB-API 2 though.
+The type_code provided by the description attribute is still equal to
+the PostgreSQL internal type name, but now carries some more information
+in additional attributes. The size, precision and scale information that
+is part of the description is now properly set for numeric types.</p></li>
+<li><p>If you pass a Python list as one of the parameters to a DB-API 2 cursor,
+it is now automatically bound using an ARRAY constructor. If you pass a
+Python tuple, it is bound using a ROW constructor. This is useful for
+passing records as well as making use of the IN syntax.</p></li>
+<li><p>Inversely, when a fetch method of a DB-API 2 cursor returns a PostgreSQL
+array, it is passed to Python as a list, and when it returns a PostgreSQL
+composite type, it is passed to Python as a named tuple. PyGreSQL uses
+a new fast built-in parser to achieve this. Anonymous composite types are
+also supported, but yield only an ordinary tuple containing text strings.</p></li>
+<li><p>New type helpers Interval() and Uuid() have been added.</p></li>
+<li><p>The connection has a new attribute “closed” that can be used to check
+whether the connection is closed or broken.</p></li>
+<li><p>SQL commands are always handled as if they include parameters, i.e.
+literal percent signs must always be doubled. This consistent behavior
+is necessary for using pgdb with wrappers like SQLAlchemy.</p></li>
+<li><p>PyGreSQL 5.0 will be supported as a database driver by SQLAlchemy 1.1.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Changes concerning both modules:</dt><dd><ul>
+<li><p>PyGreSQL now tries to raise more specific and appropriate subclasses of
+DatabaseError than just ProgrammingError. Particularly, when database
+constraints are violated, it raises an IntegrityError now.</p></li>
+<li><p>The modules now provide get_typecast() and set_typecast() methods
+allowing to control the typecasting on the global level. The connection
+objects have type caches with the same methods which give control over
+the typecasting on the level of the current connection.
+See the documentation for details about the type cache and the typecast
+mechanisms provided by PyGreSQL.</p></li>
+<li><p>Dates, times, timestamps and time intervals are now returned as the
+corresponding Python objects from the datetime module of the standard
+library. In earlier versions of PyGreSQL they had been returned as
+strings. You can restore the old behavior by deactivating the respective
+typecast functions, e.g. set_typecast(‘date’, str).</p></li>
+<li><p>PyGreSQL now supports the “uuid” data type, converting such columns
+automatically to and from Python uuid.UUID objects.</p></li>
+<li><p>PyGreSQL now supports the “hstore” data type, converting such columns
+automatically to and from Python dictionaries. If you want to insert
+Python objects as JSON data using DB-API 2, you should wrap them in the
+new HStore() type constructor as a hint to PyGreSQL.</p></li>
+<li><p>PyGreSQL now supports the “json” and “jsonb” data types, converting such
+columns automatically to and from Python objects. If you want to insert
+Python objects as JSON data using DB-API 2, you should wrap them in the
+new Json() type constructor as a hint to PyGreSQL.</p></li>
+<li><p>A new type helper Literal() for inserting parameters literally as SQL
+has been added. This is useful for table names, for instance.</p></li>
+<li><p>Fast parsers cast_array(), cast_record() and cast_hstore for the input
+and output syntax for PostgreSQL arrays, composite types and the hstore
+type have been added to the C extension module. The array parser also
+allows using multi-dimensional arrays with PyGreSQL.</p></li>
+<li><p>The tty parameter and attribute of database connections has been
+removed since it is not supported by PostgreSQL versions newer than 7.4.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="version-4-2-2-2016-03-18">
+<h2>Version 4.2.2 (2016-03-18)<a class="headerlink" href="#version-4-2-2-2016-03-18" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>The get_relations() and get_tables() methods now also return system views
+and tables if you set the optional “system” parameter to True.</p></li>
+<li><p>Fixed a regression when using temporary tables with DB wrapper methods
+(thanks to Patrick TJ McPhee for reporting).</p></li>
+</ul>
+</section>
+<section id="version-4-2-1-2016-02-18">
+<h2>Version 4.2.1 (2016-02-18)<a class="headerlink" href="#version-4-2-1-2016-02-18" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Fixed a small bug when setting the notice receiver.</p></li>
+<li><p>Some more minor fixes and re-packaging with proper permissions.</p></li>
+</ul>
+</section>
+<section id="version-4-2-2016-01-21">
+<h2>Version 4.2 (2016-01-21)<a class="headerlink" href="#version-4-2-2016-01-21" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>The supported Python versions are 2.4 to 2.7.</p></li>
+<li><p>PostgreSQL is supported in all versions from 8.3 to 9.5.</p></li>
+<li><p>Set a better default for the user option “escaping-funcs”.</p></li>
+<li><p>Force build to compile with no errors.</p></li>
+<li><p>New methods get_parameters() and set_parameters() in the classic interface
+which can be used to get or set run-time parameters.</p></li>
+<li><p>New method truncate() in the classic interface that can be used to quickly
+empty a table or a set of tables.</p></li>
+<li><p>Fix decimal point handling.</p></li>
+<li><p>Add option to return boolean values as bool objects.</p></li>
+<li><p>Add option to return money values as string.</p></li>
+<li><p>get_tables() does not list information schema tables any more.</p></li>
+<li><p>Fix notification handler (Thanks Patrick TJ McPhee).</p></li>
+<li><p>Fix a small issue with large objects.</p></li>
+<li><p>Minor improvements of the NotificationHandler.</p></li>
+<li><p>Converted documentation to Sphinx and added many missing parts.</p></li>
+<li><p>The tutorial files have become a chapter in the documentation.</p></li>
+<li><p>Greatly improved unit testing, tests run with Python 2.4 to 2.7 again.</p></li>
+</ul>
+</section>
+<section id="version-4-1-1-2013-01-08">
+<h2>Version 4.1.1 (2013-01-08)<a class="headerlink" href="#version-4-1-1-2013-01-08" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Add NotificationHandler class and method. Replaces need for pgnotify.</p></li>
+<li><p>Sharpen test for inserting current_timestamp.</p></li>
+<li><p>Add more quote tests. False and 0 should evaluate to NULL.</p></li>
+<li><p>More tests - Any number other than 0 is True.</p></li>
+<li><p>Do not use positional parameters internally.
+This restores backward compatibility with version 4.0.</p></li>
+<li><p>Add methods for changing the decimal point.</p></li>
+</ul>
+</section>
+<section id="version-4-1-2013-01-01">
+<h2>Version 4.1 (2013-01-01)<a class="headerlink" href="#version-4-1-2013-01-01" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Dropped support for Python below 2.5 and PostgreSQL below 8.3.</p></li>
+<li><p>Added support for Python up to 2.7 and PostgreSQL up to 9.2.</p></li>
+<li><p>Particularly, support PQescapeLiteral() and PQescapeIdentifier().</p></li>
+<li><p>The query method of the classic API now supports positional parameters.
+This an effective way to pass arbitrary or unknown data without worrying
+about SQL injection or syntax errors (contribution by Patrick TJ McPhee).</p></li>
+<li><p>The classic API now supports a method namedresult() in addition to
+getresult() and dictresult(), which returns the rows of the result
+as named tuples if these are supported (Python 2.6 or higher).</p></li>
+<li><p>The classic API has got the new methods begin(), commit(), rollback(),
+savepoint() and release() for handling transactions.</p></li>
+<li><p>Both classic and DBAPI 2 connections can now be used as context
+managers for encapsulating transactions.</p></li>
+<li><p>The execute() and executemany() methods now return the cursor object,
+so you can now write statements like “for row in cursor.execute(…)”
+(as suggested by Adam Frederick).</p></li>
+<li><p>Binary objects are now automatically escaped and unescaped.</p></li>
+<li><p>Bug in money quoting fixed. Amounts of $0.00 handled correctly.</p></li>
+<li><p>Proper handling of date and time objects as input.</p></li>
+<li><p>Proper handling of floats with ‘nan’ or ‘inf’ values as input.</p></li>
+<li><p>Fixed the set_decimal() function.</p></li>
+<li><p>All DatabaseError instances now have a sqlstate attribute.</p></li>
+<li><p>The getnotify() method can now also return payload strings (#15).</p></li>
+<li><p>Better support for notice processing with the new methods
+set_notice_receiver() and get_notice_receiver()
+(as suggested by Michael Filonenko, see #37).</p></li>
+<li><p>Open transactions are rolled back when pgdb connections are closed
+(as suggested by Peter Harris, see #46).</p></li>
+<li><p>Connections and cursors can now be used with the “with” statement
+(as suggested by Peter Harris, see #46).</p></li>
+<li><p>New method use_regtypes() that can be called to let getattnames()
+return registered type names instead of the simplified classic types (#44).</p></li>
+</ul>
+</section>
+<section id="version-4-0-2009-01-01">
+<h2>Version 4.0 (2009-01-01)<a class="headerlink" href="#version-4-0-2009-01-01" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Dropped support for Python below 2.3 and PostgreSQL below 7.4.</p></li>
+<li><p>Improved performance of fetchall() for large result sets
+by speeding up the type casts (as suggested by Peter Schuller).</p></li>
+<li><p>Exposed exceptions as attributes of the connection object.</p></li>
+<li><p>Exposed connection as attribute of the cursor object.</p></li>
+<li><p>Cursors now support the iteration protocol.</p></li>
+<li><p>Added new method to get parameter settings.</p></li>
+<li><p>Added customizable row_factory as suggested by Simon Pamies.</p></li>
+<li><p>Separated between mandatory and additional type objects.</p></li>
+<li><p>Added keyword args to insert, update and delete methods.</p></li>
+<li><p>Added exception handling for direct copy.</p></li>
+<li><p>Start transactions only when necessary, not after every commit().</p></li>
+<li><p>Release the GIL while making a connection
+(as suggested by Peter Schuller).</p></li>
+<li><p>If available, use decimal.Decimal for numeric types.</p></li>
+<li><p>Allow DB wrapper to be used with DB-API 2 connections
+(as suggested by Chris Hilton).</p></li>
+<li><p>Made private attributes of DB wrapper accessible.</p></li>
+<li><p>Dropped dependence on mx.DateTime module.</p></li>
+<li><p>Support for PQescapeStringConn() and PQescapeByteaConn();
+these are now also used by the internal _quote() functions.</p></li>
+<li><p>Added ‘int8’ to INTEGER types. New SMALLINT type.</p></li>
+<li><p>Added a way to find the number of rows affected by a query()
+with the classic pg module by returning it as a string.
+For single inserts, query() still returns the oid as an integer.
+The pgdb module already provides the “rowcount” cursor attribute
+for the same purpose.</p></li>
+<li><p>Improved getnotify() by calling PQconsumeInput() instead of
+submitting an empty command.</p></li>
+<li><p>Removed compatibility code for old OID munging style.</p></li>
+<li><p>The insert() and update() methods now use the “returning” clause
+if possible to get all changed values, and they also check in advance
+whether a subsequent select is possible, so that ongoing transactions
+won’t break if there is no select privilege.</p></li>
+<li><p>Added “protocol_version” and “server_version” attributes.</p></li>
+<li><p>Revived the “user” attribute.</p></li>
+<li><p>The pg module now works correctly with composite primary keys;
+these are represented as frozensets.</p></li>
+<li><p>Removed the undocumented and actually unnecessary “view” parameter
+from the get() method.</p></li>
+<li><p>get() raises a nicer ProgrammingError instead of a KeyError
+if no primary key was found.</p></li>
+<li><p>delete() now also works based on the primary key if no oid available
+and returns whether the row existed or not.</p></li>
+</ul>
+</section>
+<section id="version-3-8-1-2006-06-05">
+<h2>Version 3.8.1 (2006-06-05)<a class="headerlink" href="#version-3-8-1-2006-06-05" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Use string methods instead of deprecated string functions.</p></li>
+<li><p>Only use SQL-standard way of escaping quotes.</p></li>
+<li><p>Added the functions escape_string() and escape/unescape_bytea()
+(as suggested by Charlie Dyson and Kavous Bojnourdi a long time ago).</p></li>
+<li><p>Reverted code in clear() method that set date to current.</p></li>
+<li><p>Added code for backwards compatibility in OID munging code.</p></li>
+<li><p>Reorder attnames tests so that “interval” is checked for before “int.”</p></li>
+<li><p>If caller supplies key dictionary, make sure that all has a namespace.</p></li>
+</ul>
+</section>
+<section id="version-3-8-2006-02-17">
+<h2>Version 3.8 (2006-02-17)<a class="headerlink" href="#version-3-8-2006-02-17" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Installed new favicon.ico from Matthew Sporleder &lt;<a class="reference external" href="mailto:mspo&#37;&#52;&#48;mspo&#46;com">mspo<span>&#64;</span>mspo<span>&#46;</span>com</a>&gt;</p></li>
+<li><p>Replaced snprintf by PyOS_snprintf</p></li>
+<li><p>Removed NO_SNPRINTF switch which is not needed any longer</p></li>
+<li><p>Clean up some variable names and namespace</p></li>
+<li><p>Add get_relations() method to get any type of relation</p></li>
+<li><p>Rewrite get_tables() to use get_relations()</p></li>
+<li><p>Use new method in get_attnames method to get attributes of views as well</p></li>
+<li><p>Add Binary type</p></li>
+<li><p>Number of rows is now -1 after executing no-result statements</p></li>
+<li><p>Fix some number handling</p></li>
+<li><p>Non-simple types do not raise an error any more</p></li>
+<li><p>Improvements to documentation framework</p></li>
+<li><p>Take into account that nowadays not every table must have an oid column</p></li>
+<li><p>Simplification and improvement of the inserttable() function</p></li>
+<li><p>Fix up unit tests</p></li>
+<li><p>The usual assortment of minor fixes and enhancements</p></li>
+</ul>
+</section>
+<section id="version-3-7-2005-09-07">
+<h2>Version 3.7 (2005-09-07)<a class="headerlink" href="#version-3-7-2005-09-07" title="Link to this heading">¶</a></h2>
+<p>Improvement of pgdb module:</p>
+<ul class="simple">
+<li><p>Use Python standard <cite>datetime</cite> if <cite>mxDateTime</cite> is not available</p></li>
+</ul>
+<p>Major improvements and clean-up in classic pg module:</p>
+<ul class="simple">
+<li><p>All members of the underlying connection directly available in <cite>DB</cite></p></li>
+<li><p>Fixes to quoting function</p></li>
+<li><p>Add checks for valid database connection to methods</p></li>
+<li><p>Improved namespace support, handle <cite>search_path</cite> correctly</p></li>
+<li><p>Removed old dust and unnecessary imports, added docstrings</p></li>
+<li><p>Internal sql statements as one-liners, smoothed out ugly code</p></li>
+</ul>
+</section>
+<section id="version-3-6-2-2005-02-23">
+<h2>Version 3.6.2 (2005-02-23)<a class="headerlink" href="#version-3-6-2-2005-02-23" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Further fixes to namespace handling</p></li>
+</ul>
+</section>
+<section id="version-3-6-1-2005-01-11">
+<h2>Version 3.6.1 (2005-01-11)<a class="headerlink" href="#version-3-6-1-2005-01-11" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Fixes to namespace handling</p></li>
+</ul>
+</section>
+<section id="version-3-6-2004-12-17">
+<h2>Version 3.6 (2004-12-17)<a class="headerlink" href="#version-3-6-2004-12-17" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Better DB-API 2.0 compliance</p></li>
+<li><p>Exception hierarchy moved into C module and made available to both APIs</p></li>
+<li><p>Fix error in update method that caused false exceptions</p></li>
+<li><p>Moved to standard exception hierarchy in classic API</p></li>
+<li><p>Added new method to get transaction state</p></li>
+<li><p>Use proper Python constants where appropriate</p></li>
+<li><p>Use Python versions of strtol, etc. Allows Win32 build.</p></li>
+<li><p>Bug fixes and cleanups</p></li>
+</ul>
+</section>
+<section id="version-3-5-2004-08-29">
+<h2>Version 3.5 (2004-08-29)<a class="headerlink" href="#version-3-5-2004-08-29" title="Link to this heading">¶</a></h2>
+<p>Fixes and enhancements:</p>
+<ul class="simple">
+<li><p>Add interval to list of data types</p></li>
+<li><p>fix up method wrapping especially close()</p></li>
+<li><p>retry pkeys once if table missing in case it was just added</p></li>
+<li><p>wrap query method separately to handle debug better</p></li>
+<li><p>use isinstance instead of type</p></li>
+<li><p>fix free/PQfreemem issue - finally</p></li>
+<li><p>miscellaneous cleanups and formatting</p></li>
+</ul>
+</section>
+<section id="version-3-4-2004-06-02">
+<h2>Version 3.4 (2004-06-02)<a class="headerlink" href="#version-3-4-2004-06-02" title="Link to this heading">¶</a></h2>
+<p>Some cleanups and fixes.
+This is the first version where PyGreSQL is moved back out of the
+PostgreSQL tree. A lot of the changes mentioned below were actually
+made while in the PostgreSQL tree since their last release.</p>
+<ul class="simple">
+<li><p>Allow for larger integer returns</p></li>
+<li><p>Return proper strings for true and false</p></li>
+<li><p>Cleanup convenience method creation</p></li>
+<li><p>Enhance debugging method</p></li>
+<li><p>Add reopen method</p></li>
+<li><p>Allow programs to preload field names for speedup</p></li>
+<li><p>Move OID handling so that it returns long instead of int</p></li>
+<li><p>Miscellaneous cleanups and formatting</p></li>
+</ul>
+</section>
+<section id="version-3-3-2001-12-03">
+<h2>Version 3.3 (2001-12-03)<a class="headerlink" href="#version-3-3-2001-12-03" title="Link to this heading">¶</a></h2>
+<p>A few cleanups. Mostly there was some confusion about the latest version
+and so I am bumping the number to keep it straight.</p>
+<ul class="simple">
+<li><p>Added NUMERICOID to list of returned types. This fixes a bug when
+returning aggregates in the latest version of PostgreSQL.</p></li>
+</ul>
+</section>
+<section id="version-3-2-2001-06-20">
+<h2>Version 3.2 (2001-06-20)<a class="headerlink" href="#version-3-2-2001-06-20" title="Link to this heading">¶</a></h2>
+<p>Note that there are very few changes to PyGreSQL between 3.1 and 3.2.
+The main reason for the release is the move into the PostgreSQL
+development tree. Even the WIN32 changes are pretty minor.</p>
+<ul class="simple">
+<li><p>Add Win32 support (<a class="reference external" href="mailto:gerhard&#37;&#52;&#48;bigfoot&#46;de">gerhard<span>&#64;</span>bigfoot<span>&#46;</span>de</a>)</p></li>
+<li><p>Fix some DB-API quoting problems (<a class="reference external" href="mailto:niall&#46;smart&#37;&#52;&#48;ebeon&#46;com">niall<span>&#46;</span>smart<span>&#64;</span>ebeon<span>&#46;</span>com</a>)</p></li>
+<li><p>Moved development into PostgreSQL development tree.</p></li>
+</ul>
+</section>
+<section id="version-3-1-2000-11-06">
+<h2>Version 3.1 (2000-11-06)<a class="headerlink" href="#version-3-1-2000-11-06" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Fix some quoting functions. In particular handle NULLs better.</p></li>
+<li><p>Use a method to add primary key information rather than direct
+manipulation of the class structures</p></li>
+<li><p>Break decimal out in <cite>_quote</cite> (in pg.py) and treat it as float</p></li>
+<li><p>Treat timestamp like date for quoting purposes</p></li>
+<li><p>Remove a redundant SELECT from the <cite>get</cite> method speeding it,
+and <cite>insert</cite> (since it calls <cite>get</cite>) up a little.</p></li>
+<li><p>Add test for BOOL type in typecast method to <cite>pgdbTypeCache</cite> class
+(<a class="reference external" href="mailto:tv&#37;&#52;&#48;beamnet&#46;de">tv<span>&#64;</span>beamnet<span>&#46;</span>de</a>)</p></li>
+<li><p>Fix pgdb.py to send port as integer to lower level function
+(<a class="reference external" href="mailto:dildog&#37;&#52;&#48;l0pht&#46;com">dildog<span>&#64;</span>l0pht<span>&#46;</span>com</a>)</p></li>
+<li><p>Change pg.py to speed up some operations</p></li>
+<li><p>Allow updates on tables with no primary keys</p></li>
+</ul>
+</section>
+<section id="version-3-0-2000-05-30">
+<h2>Version 3.0 (2000-05-30)<a class="headerlink" href="#version-3-0-2000-05-30" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Remove strlen() call from pglarge_write() and get size from object
+(<a class="reference external" href="mailto:Richard&#37;&#52;&#48;Bouska&#46;cz">Richard<span>&#64;</span>Bouska<span>&#46;</span>cz</a>)</p></li>
+<li><p>Add a little more error checking to the quote function in the wrapper</p></li>
+<li><p>Add extra checking in <cite>_quote</cite> function</p></li>
+<li><p>Wrap query in pg.py for debugging</p></li>
+<li><p>Add DB-API 2.0 support to pgmodule.c (<a class="reference external" href="mailto:andre&#37;&#52;&#48;via&#46;ecp&#46;fr">andre<span>&#64;</span>via<span>&#46;</span>ecp<span>&#46;</span>fr</a>)</p></li>
+<li><p>Add DB-API 2.0 wrapper pgdb.py (<a class="reference external" href="mailto:andre&#37;&#52;&#48;via&#46;ecp&#46;fr">andre<span>&#64;</span>via<span>&#46;</span>ecp<span>&#46;</span>fr</a>)</p></li>
+<li><p>Correct keyword clash (temp) in tutorial</p></li>
+<li><p>Clean up layout of tutorial</p></li>
+<li><p>Return NULL values as None (<a class="reference external" href="mailto:rlawrence&#37;&#52;&#48;lastfoot&#46;com">rlawrence<span>&#64;</span>lastfoot<span>&#46;</span>com</a>)
+(WARNING: This will cause backwards compatibility issues)</p></li>
+<li><p>Change None to NULL in insert and update</p></li>
+<li><p>Change hash-bang lines to use /usr/bin/env</p></li>
+<li><p>Clearing date should be blank (NULL) not TODAY</p></li>
+<li><p>Quote backslashes in strings in <cite>_quote</cite> (<a class="reference external" href="mailto:brian&#37;&#52;&#48;CSUA&#46;Berkeley&#46;EDU">brian<span>&#64;</span>CSUA<span>&#46;</span>Berkeley<span>&#46;</span>EDU</a>)</p></li>
+<li><p>Expanded and clarified build instructions (<a class="reference external" href="mailto:tbryan&#37;&#52;&#48;starship&#46;python&#46;net">tbryan<span>&#64;</span>starship<span>&#46;</span>python<span>&#46;</span>net</a>)</p></li>
+<li><p>Make code thread safe (<a class="reference external" href="mailto:Jerome&#46;Alet&#37;&#52;&#48;unice&#46;fr">Jerome<span>&#46;</span>Alet<span>&#64;</span>unice<span>&#46;</span>fr</a>)</p></li>
+<li><p>Add README.distutils (<a class="reference external" href="mailto:mwa&#37;&#52;&#48;gate&#46;net">mwa<span>&#64;</span>gate<span>&#46;</span>net</a> &amp; <a class="reference external" href="mailto:jeremy&#37;&#52;&#48;cnri&#46;reston&#46;va&#46;us">jeremy<span>&#64;</span>cnri<span>&#46;</span>reston<span>&#46;</span>va<span>&#46;</span>us</a>)</p></li>
+<li><p>Many fixes and increased DB-API compliance by <a class="reference external" href="mailto:chifungfan&#37;&#52;&#48;yahoo&#46;com">chifungfan<span>&#64;</span>yahoo<span>&#46;</span>com</a>,
+<a class="reference external" href="mailto:tony&#37;&#52;&#48;printra&#46;net">tony<span>&#64;</span>printra<span>&#46;</span>net</a>, <a class="reference external" href="mailto:jeremy&#37;&#52;&#48;alum&#46;mit&#46;edu">jeremy<span>&#64;</span>alum<span>&#46;</span>mit<span>&#46;</span>edu</a> and others to get the final
+version ready to release.</p></li>
+</ul>
+</section>
+<section id="version-2-4-1999-06-15">
+<h2>Version 2.4 (1999-06-15)<a class="headerlink" href="#version-2-4-1999-06-15" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Insert returns None if the user doesn’t have select permissions
+on the table. It can (and does) happen that one has insert but
+not select permissions on a table.</p></li>
+<li><p>Added ntuples() method to query object (<a class="reference external" href="mailto:brit&#37;&#52;&#48;druid&#46;net">brit<span>&#64;</span>druid<span>&#46;</span>net</a>)</p></li>
+<li><p>Corrected a bug related to getresult() and the money type</p></li>
+<li><p>Corrected a bug related to negative money amounts</p></li>
+<li><p>Allow update based on primary key if munged oid not available and
+table has a primary key</p></li>
+<li><p>Add many __doc__ strings (<a class="reference external" href="mailto:andre&#37;&#52;&#48;via&#46;ecp&#46;fr">andre<span>&#64;</span>via<span>&#46;</span>ecp<span>&#46;</span>fr</a>)</p></li>
+<li><p>Get method works with views if key specified</p></li>
+</ul>
+</section>
+<section id="version-2-3-1999-04-17">
+<h2>Version 2.3 (1999-04-17)<a class="headerlink" href="#version-2-3-1999-04-17" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>connect.host returns “localhost” when connected to Unix socket
+(<a class="reference external" href="mailto:torppa&#37;&#52;&#48;tuhnu&#46;cutery&#46;fi">torppa<span>&#64;</span>tuhnu<span>&#46;</span>cutery<span>&#46;</span>fi</a>)</p></li>
+<li><p>Use <cite>PyArg_ParseTupleAndKeywords</cite> in connect() (<a class="reference external" href="mailto:torppa&#37;&#52;&#48;tuhnu&#46;cutery&#46;fi">torppa<span>&#64;</span>tuhnu<span>&#46;</span>cutery<span>&#46;</span>fi</a>)</p></li>
+<li><p>fixes and cleanups (<a class="reference external" href="mailto:torppa&#37;&#52;&#48;tuhnu&#46;cutery&#46;fi">torppa<span>&#64;</span>tuhnu<span>&#46;</span>cutery<span>&#46;</span>fi</a>)</p></li>
+<li><p>Fixed memory leak in dictresult() (<a class="reference external" href="mailto:terekhov&#37;&#52;&#48;emc&#46;com">terekhov<span>&#64;</span>emc<span>&#46;</span>com</a>)</p></li>
+<li><p>Deprecated pgext.py - functionality now in pg.py</p></li>
+<li><p>More cleanups to the tutorial</p></li>
+<li><p>Added fileno() method - <a class="reference external" href="mailto:terekhov&#37;&#52;&#48;emc&#46;com">terekhov<span>&#64;</span>emc<span>&#46;</span>com</a> (Mikhail Terekhov)</p></li>
+<li><p>added money type to quoting function</p></li>
+<li><p>Compiles cleanly with more warnings turned on</p></li>
+<li><p>Returns PostgreSQL error message on error</p></li>
+<li><p>Init accepts keywords (Jarkko Torppa)</p></li>
+<li><p>Convenience functions can be overridden (Jarkko Torppa)</p></li>
+<li><p>added close() method</p></li>
+</ul>
+</section>
+<section id="version-2-2-1998-12-21">
+<h2>Version 2.2 (1998-12-21)<a class="headerlink" href="#version-2-2-1998-12-21" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Added user and password support thanks to Ng Pheng Siong (<a class="reference external" href="mailto:ngps&#37;&#52;&#48;post1&#46;com">ngps<span>&#64;</span>post1<span>&#46;</span>com</a>)</p></li>
+<li><p>Insert queries return the inserted oid</p></li>
+<li><p>Add new <cite>pg</cite> wrapper (C module renamed to _pg)</p></li>
+<li><p>Wrapped database connection in a class</p></li>
+<li><p>Cleaned up some of the tutorial. (More work needed.)</p></li>
+<li><p>Added <cite>version</cite> and <cite>__version__</cite>.
+Thanks to <a class="reference external" href="mailto:thilo&#37;&#52;&#48;eevolute&#46;com">thilo<span>&#64;</span>eevolute<span>&#46;</span>com</a> for the suggestion.</p></li>
+</ul>
+</section>
+<section id="version-2-1-1998-03-07">
+<h2>Version 2.1 (1998-03-07)<a class="headerlink" href="#version-2-1-1998-03-07" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>return fields as proper Python objects for field type</p></li>
+<li><p>Cleaned up pgext.py</p></li>
+<li><p>Added dictresult method</p></li>
+</ul>
+</section>
+<section id="version-2-0-1997-12-23">
+<h2>Version 2.0 (1997-12-23)<a class="headerlink" href="#version-2-0-1997-12-23" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Updated code for PostgreSQL 6.2.1 and Python 1.5</p></li>
+<li><p>Reformatted code and converted to use full ANSI style prototypes</p></li>
+<li><p>Changed name to PyGreSQL (from PyGres95)</p></li>
+<li><p>Changed order of arguments to connect function</p></li>
+<li><p>Created new type <cite>pgqueryobject</cite> and moved certain methods to it</p></li>
+<li><p>Added a print function for pgqueryobject</p></li>
+<li><p>Various code changes - mostly stylistic</p></li>
+</ul>
+</section>
+<section id="version-1-0b-1995-11-04">
+<h2>Version 1.0b (1995-11-04)<a class="headerlink" href="#version-1-0b-1995-11-04" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Keyword support for connect function moved from library file to C code
+and taken away from library</p></li>
+<li><p>Rewrote documentation</p></li>
+<li><p>Bug fix in connect function</p></li>
+<li><p>Enhancements in large objects interface methods</p></li>
+</ul>
+</section>
+<section id="version-1-0a-1995-10-30">
+<h2>Version 1.0a (1995-10-30)<a class="headerlink" href="#version-1-0a-1995-10-30" title="Link to this heading">¶</a></h2>
+<p>A limited release.</p>
+<ul class="simple">
+<li><p>Module adapted to standard Python syntax</p></li>
+<li><p>Keyword support for connect function in library file</p></li>
+<li><p>Rewrote default parameters interface (internal use of strings)</p></li>
+<li><p>Fixed minor bugs in module interface</p></li>
+<li><p>Redefinition of error messages</p></li>
+</ul>
+</section>
+<section id="version-0-9b-1995-10-10">
+<h2>Version 0.9b (1995-10-10)<a class="headerlink" href="#version-0-9b-1995-10-10" title="Link to this heading">¶</a></h2>
+<p>The first public release.</p>
+<ul class="simple">
+<li><p>Large objects implementation</p></li>
+<li><p>Many bug fixes, enhancements, …</p></li>
+</ul>
+</section>
+<section id="version-0-1a-1995-10-07">
+<h2>Version 0.1a (1995-10-07)<a class="headerlink" href="#version-0-1a-1995-10-07" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Basic libpq functions (SQL access)</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/pygresql.png" alt="Logo of PyGreSQL"/>
+            </a></p>
+<h1 class="logo"><a href="../index.html">PyGreSQL</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About PyGreSQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../copyright.html">Copyright notice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../download/index.html">Download information</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">The PyGreSQL documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../community/index.html">PyGreSQL Development and Support</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">The PyGreSQL documentation</a><ul>
+      <li>Previous: <a href="install.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="general.html" title="next chapter">General PyGreSQL programming information</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, The PyGreSQL team.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/contents/changelog.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

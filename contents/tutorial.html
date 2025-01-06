@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>First Steps with PyGreSQL &#8212; PyGreSQL 6.1.0</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=6340cb70"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="copyright" title="Copyright" href="../copyright.html" />
+    <link rel="next" title="pg — The Classic PyGreSQL Interface" href="pg/index.html" />
+    <link rel="prev" title="General PyGreSQL programming information" href="general.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="first-steps-with-pygresql">
+<h1>First Steps with PyGreSQL<a class="headerlink" href="#first-steps-with-pygresql" title="Link to this heading">¶</a></h1>
+<p>In this small tutorial we show you the basic operations you can perform
+with both flavors of the PyGreSQL interface. Please choose your flavor:</p>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#first-steps-with-the-classic-pygresql-interface" id="id1">First Steps with the classic PyGreSQL Interface</a></p></li>
+<li><p><a class="reference internal" href="#first-steps-with-the-db-api-2-0-interface" id="id2">First Steps with the DB-API 2.0 Interface</a></p></li>
+</ul>
+</nav>
+<section id="first-steps-with-the-classic-pygresql-interface">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">First Steps with the classic PyGreSQL Interface</a><a class="headerlink" href="#first-steps-with-the-classic-pygresql-interface" title="Link to this heading">¶</a></h2>
+<p>Before doing anything else, it’s necessary to create a database connection.</p>
+<p>To do this, simply import the <a class="reference internal" href="pg/db_wrapper.html#pg.DB" title="pg.DB"><code class="xref py py-class docutils literal notranslate"><span class="pre">DB</span></code></a> wrapper class and create an
+instance of it, passing the necessary connection parameters, like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pg</span><span class="w"> </span><span class="kn">import</span> <span class="n">DB</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span> <span class="o">=</span> <span class="n">DB</span><span class="p">(</span><span class="n">dbname</span><span class="o">=</span><span class="s1">&#39;testdb&#39;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;pgserver&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5432</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">user</span><span class="o">=</span><span class="s1">&#39;scott&#39;</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="s1">&#39;tiger&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can omit one or even all parameters if you want to use their default
+values. PostgreSQL will use the name of the current operating system user
+as the login and the database name, and will try to connect to the local
+host on port 5432 if nothing else is specified.</p>
+<p>The <cite>db</cite> object has all methods of the lower-level <a class="reference internal" href="pg/connection.html#pg.Connection" title="pg.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Connection</span></code></a> class
+plus some more convenience methods provided by the <a class="reference internal" href="pg/db_wrapper.html#pg.DB" title="pg.DB"><code class="xref py py-class docutils literal notranslate"><span class="pre">DB</span></code></a> wrapper.</p>
+<p>You can now execute database queries using the <a class="reference internal" href="pg/db_wrapper.html#pg.DB.query" title="pg.DB.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.query()</span></code></a> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;create table fruits(id serial primary key, name varchar)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can list all database tables with the <a class="reference internal" href="pg/db_wrapper.html#pg.DB.get_tables" title="pg.DB.get_tables"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.get_tables()</span></code></a> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">get_tables</span><span class="p">()</span>
+<span class="go">[&#39;public.fruits&#39;]</span>
+</pre></div>
+</div>
+<p>To get the attributes of the <em>fruits</em> table, use <a class="reference internal" href="pg/db_wrapper.html#pg.DB.get_attnames" title="pg.DB.get_attnames"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.get_attnames()</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">get_attnames</span><span class="p">(</span><span class="s1">&#39;fruits&#39;</span><span class="p">)</span>
+<span class="go">{&#39;id&#39;: &#39;int&#39;, &#39;name&#39;: &#39;text&#39;}</span>
+</pre></div>
+</div>
+<p>Verify that you can insert into the newly created <em>fruits</em> table:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">has_table_privilege</span><span class="p">(</span><span class="s1">&#39;fruits&#39;</span><span class="p">,</span> <span class="s1">&#39;insert&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>You can insert a new row into the table using the <a class="reference internal" href="pg/db_wrapper.html#pg.DB.insert" title="pg.DB.insert"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.insert()</span></code></a> method,
+for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;fruits&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;apple&#39;</span><span class="p">)</span>
+<span class="go">{&#39;name&#39;: &#39;apple&#39;, &#39;id&#39;: 1}</span>
+</pre></div>
+</div>
+<p>Note how this method returns the full row as a dictionary including its <em>id</em>
+column that has been generated automatically by a database sequence. You can
+also pass a dictionary to the <a class="reference internal" href="pg/db_wrapper.html#pg.DB.insert" title="pg.DB.insert"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.insert()</span></code></a> method instead of or in
+addition to using keyword arguments.</p>
+<p>Let’s add another row to the table:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">banana</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;fruits&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;banana&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or, you can add a whole bunch of fruits at the same time using the
+<a class="reference internal" href="pg/connection.html#pg.Connection.inserttable" title="pg.Connection.inserttable"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.inserttable()</span></code></a> method.  Note that this method uses the COPY
+command of PostgreSQL to insert all data in one batch operation, which is much
+faster than sending many individual INSERT commands:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">more_fruits</span> <span class="o">=</span> <span class="s1">&#39;cherimaya durian eggfruit fig grapefruit&#39;</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">more_fruits</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">inserttable</span><span class="p">(</span><span class="s1">&#39;fruits&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can now query the database for all rows that have been inserted into
+the <em>fruits</em> table:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;select * from fruits&#39;</span><span class="p">))</span>
+<span class="go">id|   name</span>
+<span class="go">--+----------</span>
+<span class="go"> 1|apple</span>
+<span class="go"> 2|banana</span>
+<span class="go"> 3|cherimaya</span>
+<span class="go"> 4|durian</span>
+<span class="go"> 5|eggfruit</span>
+<span class="go"> 6|fig</span>
+<span class="go"> 7|grapefruit</span>
+<span class="go">(7 rows)</span>
+</pre></div>
+</div>
+<p>Instead of simply printing the <a class="reference internal" href="pg/query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a> instance that has been returned
+by this query, we can also request the data as list of tuples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;select * from fruits&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">getresult</span><span class="p">()</span>
+<span class="gp">... </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;apple&#39;</span><span class="p">),</span> <span class="o">...</span><span class="p">,</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;grapefruit&#39;</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>Instead of a list of tuples, we can also request a list of dicts:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">dictresult</span><span class="p">()</span>
+<span class="go">[{&#39;id&#39;: 1, &#39;name&#39;: &#39;apple&#39;}, ..., {&#39;id&#39;: 7, &#39;name&#39;: &#39;grapefruit&#39;}]</span>
+</pre></div>
+</div>
+<p>You can also return the rows as named tuples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rows</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">namedresult</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rows</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;durian&#39;</span>
+</pre></div>
+</div>
+<p>In PyGreSQL 5.1 and newer, you can also use the <a class="reference internal" href="pg/query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a> instance
+directly as an iterable that yields the rows as tuples, and there are also
+methods that return iterables for rows as dictionaries, named tuples or
+scalar values. Other methods like <a class="reference internal" href="pg/query.html#pg.Query.one" title="pg.Query.one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.one()</span></code></a> or <a class="reference internal" href="pg/query.html#pg.Query.onescalar" title="pg.Query.onescalar"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.onescalar()</span></code></a>
+return only one row or only the first field of that row. You can get the
+number of rows with the <code class="xref py py-func docutils literal notranslate"><span class="pre">len()</span></code> function.</p>
+<p>Using the method <a class="reference internal" href="pg/db_wrapper.html#pg.DB.get_as_dict" title="pg.DB.get_as_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.get_as_dict()</span></code></a>, you can easily import the whole table
+into a Python dictionary mapping the primary key <em>id</em> to the <em>name</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">get_as_dict</span><span class="p">(</span><span class="s1">&#39;fruits&#39;</span><span class="p">,</span> <span class="n">scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">{1: &#39;apple&#39;, 2: &#39;banana&#39;, 3: &#39;cherimaya&#39;, 4: &#39;durian&#39;, 5: &#39;eggfruit&#39;,</span>
+<span class="go"> 6: &#39;fig&#39;, 7: &#39;grapefruit&#39;, 8: &#39;apple&#39;, 9: &#39;banana&#39;}</span>
+</pre></div>
+</div>
+<p>To change a single row in the database, you can use the <a class="reference internal" href="pg/db_wrapper.html#pg.DB.update" title="pg.DB.update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.update()</span></code></a>
+method. For instance, if you want to capitalize the name ‘banana’:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;fruits&#39;</span><span class="p">,</span> <span class="n">banana</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">banana</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+<span class="go">{&#39;id&#39;: 2, &#39;name&#39;: &#39;Banana&#39;}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;select * from fruits where id between 1 and 3&#39;</span><span class="p">))</span>
+<span class="go">id|  name</span>
+<span class="go">--+---------</span>
+<span class="go"> 1|apple</span>
+<span class="go"> 2|Banana</span>
+<span class="go"> 3|cherimaya</span>
+<span class="go">(3 rows)</span>
+</pre></div>
+</div>
+<p>Let’s also capitalize the other names in the database:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;update fruits set name=initcap(name)&#39;</span><span class="p">)</span>
+<span class="go">&#39;7&#39;</span>
+</pre></div>
+</div>
+<p>The returned string <cite>‘7’</cite> tells us the number of updated rows. It is returned
+as a string to discern it from an OID which will be returned as an integer,
+if a new row has been inserted into a table with an OID column.</p>
+<p>To delete a single row from the database, use the <a class="reference internal" href="pg/db_wrapper.html#pg.DB.delete" title="pg.DB.delete"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.delete()</span></code></a> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;fruits&#39;</span><span class="p">,</span> <span class="n">banana</span><span class="p">)</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<p>The returned integer value <cite>1</cite> tells us that one row has been deleted. If we
+try it again, the method returns the integer value <cite>0</cite>. Naturally, this method
+can only return 0 or 1:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;fruits&#39;</span><span class="p">,</span> <span class="n">banana</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<p>Of course, we can insert the row back again:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;fruits&#39;</span><span class="p">,</span> <span class="n">banana</span><span class="p">)</span>
+<span class="go">{&#39;id&#39;: 2, &#39;name&#39;: &#39;Banana&#39;}</span>
+</pre></div>
+</div>
+<p>If we want to change a different row, we can get its current state with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">apple</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fruits&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">apple</span>
+<span class="go">{&#39;name&#39;: &#39;Apple&#39;, &#39;id&#39;: 1}</span>
+</pre></div>
+</div>
+<p>We can duplicate the row like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="o">&gt;&gt;&gt;</span> <span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;fruits&#39;</span><span class="p">,</span> <span class="n">apple</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+   <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Apple&#39;</span><span class="p">}</span>
+
+<span class="n">To</span> <span class="n">remove</span> <span class="n">the</span> <span class="n">duplicated</span> <span class="n">row</span><span class="p">,</span> <span class="n">we</span> <span class="n">can</span> <span class="n">do</span><span class="p">::</span>
+
+   <span class="o">&gt;&gt;&gt;</span> <span class="n">db</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;fruits&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+   <span class="mi">1</span>
+</pre></div>
+</div>
+<p>Finally, to remove the table from the database and close the connection:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;drop table fruits&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For more advanced features and details, see the reference: <a class="reference internal" href="pg/index.html"><span class="doc">pg — The Classic PyGreSQL Interface</span></a></p>
+</section>
+<section id="first-steps-with-the-db-api-2-0-interface">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">First Steps with the DB-API 2.0 Interface</a><a class="headerlink" href="#first-steps-with-the-db-api-2-0-interface" title="Link to this heading">¶</a></h2>
+<p>As with the classic interface, the first thing you need to do is to create
+a database connection. To do this, use the function <a class="reference internal" href="pgdb/module.html#pgdb.connect" title="pgdb.connect"><code class="xref py py-func docutils literal notranslate"><span class="pre">pgdb.connect()</span></code></a>
+in the <a class="reference internal" href="pgdb/index.html#module-pgdb" title="pgdb"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pgdb</span></code></a> module, passing the connection parameters:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pgdb</span><span class="w"> </span><span class="kn">import</span> <span class="n">connect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">con</span> <span class="o">=</span> <span class="n">connect</span><span class="p">(</span><span class="n">database</span><span class="o">=</span><span class="s1">&#39;testdb&#39;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;pgserver:5432&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">user</span><span class="o">=</span><span class="s1">&#39;scott&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;tiger&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As in the classic interface, you can omit parameters if they
+are the default values used by PostgreSQL.</p>
+<p>To do anything with the connection, you need to request a cursor object
+from it, which is thought of as the Python representation of a database
+cursor. The connection has a method that lets you get a cursor:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The cursor has a method that lets you execute database queries:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;create table fruits(&quot;</span>
+<span class="gp">... </span>    <span class="s2">&quot;id serial primary key, name varchar)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can also use this method to insert data into the table:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;insert into fruits (name) values (&#39;apple&#39;)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can pass parameters in a safe way:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;insert into fruits (name) values (</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;banana&#39;</span><span class="p">,))</span>
+</pre></div>
+</div>
+<p>To insert multiple rows at once, you can use the following method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">more_fruits</span> <span class="o">=</span> <span class="s1">&#39;cherimaya durian eggfruit fig grapefruit&#39;</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameters</span> <span class="o">=</span> <span class="p">[(</span><span class="n">name</span><span class="p">,)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">more_fruits</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span><span class="o">.</span><span class="n">executemany</span><span class="p">(</span><span class="s2">&quot;insert into fruits (name) values (</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The cursor also has a <a class="reference internal" href="pgdb/cursor.html#pgdb.Cursor.copy_from" title="pgdb.Cursor.copy_from"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Cursor.copy_from()</span></code></a> method to quickly insert
+large amounts of data into the database, and a <a class="reference internal" href="pgdb/cursor.html#pgdb.Cursor.copy_to" title="pgdb.Cursor.copy_to"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Cursor.copy_to()</span></code></a>
+method to quickly dump large amounts of data from the database, using the
+PostgreSQL COPY command. Note however, that these methods are an extension
+provided by PyGreSQL, they are not part of the DB-API 2 standard.</p>
+<p>Also note that the DB API 2.0 interface does not have an autocommit as you
+may be used from PostgreSQL. So in order to make these inserts permanent,
+you need to commit them to the database:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If you end the program without calling the commit method of the connection,
+or if you call the rollback method of the connection, then the changes
+will be discarded.</p>
+<p>In a similar way, you can update or delete rows in the database,
+executing UPDATE or DELETE statements instead of INSERT statements.</p>
+<p>To fetch rows from the database, execute a SELECT statement first. Then
+you can use one of several fetch methods to retrieve the results. For
+instance, to request a single row:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;select * from fruits where id=1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+<span class="go">Row(id=1, name=&#39;apple&#39;)</span>
+</pre></div>
+</div>
+<p>The result is a named tuple. This means you can access its elements either
+using an index number as for an ordinary tuple, or using the column name
+as for access to object attributes.</p>
+<p>To fetch all rows of the query, use this method instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;select * from fruits&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+<span class="go">[Row(id=1, name=&#39;apple&#39;), ..., Row(id=7, name=&#39;grapefruit&#39;)]</span>
+</pre></div>
+</div>
+<p>The output is a list of named tuples.</p>
+<p>If you want to fetch only a limited number of rows from the query:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;select * from fruits&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchmany</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">[Row(id=1, name=&#39;apple&#39;), Row(id=2, name=&#39;banana&#39;)]</span>
+</pre></div>
+</div>
+<p>Finally, to remove the table from the database and close the connection:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;drop table fruits&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cur</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">con</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For more advanced features and details, see the reference: <a class="reference internal" href="pgdb/index.html"><span class="doc">pgdb — The DB-API Compliant Interface</span></a></p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/pygresql.png" alt="Logo of PyGreSQL"/>
+            </a></p>
+<h1 class="logo"><a href="../index.html">PyGreSQL</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About PyGreSQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../copyright.html">Copyright notice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../download/index.html">Download information</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">The PyGreSQL documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../community/index.html">PyGreSQL Development and Support</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">The PyGreSQL documentation</a><ul>
+      <li>Previous: <a href="general.html" title="previous chapter">General PyGreSQL programming information</a></li>
+      <li>Next: <a href="pg/index.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pg</span></code> — The Classic PyGreSQL Interface</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, The PyGreSQL team.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/contents/tutorial.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

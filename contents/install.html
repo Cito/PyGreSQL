@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Installation &#8212; PyGreSQL 6.1.0</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=6340cb70"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="copyright" title="Copyright" href="../copyright.html" />
+    <link rel="next" title="ChangeLog" href="changelog.html" />
+    <link rel="prev" title="The PyGreSQL documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
+<section id="general">
+<h2>General<a class="headerlink" href="#general" title="Link to this heading">¶</a></h2>
+<p>You must first install Python and PostgreSQL on your system.
+If you want to access remote databases only, you don’t need to install
+the full PostgreSQL server, but only the libpq C-interface library.
+On Windows, this library is called <code class="docutils literal notranslate"><span class="pre">libpq.dll</span></code> and is for instance contained
+in the PostgreSQL ODBC driver (search for “psqlodbc”). On Linux, it is called
+<code class="docutils literal notranslate"><span class="pre">libpq.so</span></code> and usually provided in a package called “libpq” or “libpq5”.
+On Windows, you also need to make sure that the directory that contains
+<code class="docutils literal notranslate"><span class="pre">libpq.dll</span></code> is part of your <code class="docutils literal notranslate"><span class="pre">PATH</span></code> environment variable.</p>
+<p>The current version of PyGreSQL has been tested with Python versions
+3.7 to 3.13, and PostgreSQL versions 10 to 17.</p>
+<p>PyGreSQL will be installed as two packages named <code class="docutils literal notranslate"><span class="pre">pg</span></code> (for the classic
+interface) and <code class="docutils literal notranslate"><span class="pre">pgdb</span></code> (for the DB API 2 compliant interface). The former
+also contains a shared library called <code class="docutils literal notranslate"><span class="pre">_pg.so</span></code> (on Linux) or a DLL called
+<code class="docutils literal notranslate"><span class="pre">_pg.pyd</span></code> (on Windows) and a stub file <code class="docutils literal notranslate"><span class="pre">_pg.pyi</span></code> for this library.</p>
+</section>
+<section id="installing-with-pip">
+<h2>Installing with Pip<a class="headerlink" href="#installing-with-pip" title="Link to this heading">¶</a></h2>
+<p>This is the most easy way to install PyGreSQL if you have “pip” installed.
+Just run the following command in your terminal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">PyGreSQL</span>
+</pre></div>
+</div>
+<p>This will automatically try to find and download a distribution on the
+<a class="reference external" href="https://pypi.python.org/">Python Package Index</a> that matches your operating
+system and Python version and install it.</p>
+<p>Note that you still need to have the libpq interface installed on your system
+(see the general remarks above).</p>
+</section>
+<section id="installing-from-a-binary-distribution">
+<h2>Installing from a Binary Distribution<a class="headerlink" href="#installing-from-a-binary-distribution" title="Link to this heading">¶</a></h2>
+<p>If you don’t want to use “pip”, or “pip” doesn’t find an appropriate
+distribution for your computer, you can also try to manually download
+and install a distribution.</p>
+<p>When you download the source distribution, you will need to compile the
+C extension, for which you need a C compiler installed.
+If you don’t want to install a C compiler or avoid possible problems
+with the compilation, you can search for a pre-compiled binary distribution
+of PyGreSQL on the Python Package Index or the PyGreSQL homepage.</p>
+<p>You can currently download PyGreSQL as Linux RPM, NetBSD package and Windows
+installer. Make sure the required Python version of the binary package matches
+the Python version you have installed.</p>
+<p>Install the package as usual on your system.</p>
+<p>Note that the documentation is currently only included in the source package.</p>
+</section>
+<section id="installing-from-source">
+<h2>Installing from Source<a class="headerlink" href="#installing-from-source" title="Link to this heading">¶</a></h2>
+<p>If you want to install PyGreSQL from Source, or there is no binary
+package available for your platform, follow these instructions.</p>
+<p>Make sure the Python header files and PostgreSQL client and server header
+files are installed. These come usually with the “devel” packages on Unix
+systems and the installer executables on Windows systems.</p>
+<p>If you are using a precompiled PostgreSQL, you will also need the pg_config
+tool. This is usually also part of the “devel” package on Unix, and will be
+installed as part of the database server feature on Windows systems.</p>
+<section id="building-and-installing-with-distutils">
+<h3>Building and installing with Distutils<a class="headerlink" href="#building-and-installing-with-distutils" title="Link to this heading">¶</a></h3>
+<p>You can build and install PyGreSQL using
+<a class="reference external" href="http://docs.python.org/install/">Distutils</a>.</p>
+<p>Download and unpack the PyGreSQL source tarball if you haven’t already done so.</p>
+<p>Type the following commands to build and install PyGreSQL:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>Now you should be ready to use PyGreSQL.</p>
+<p>You can also run the build step separately if you want to create a distribution
+to be installed on a different system or explicitly enable or disable certain
+features. For instance, in order to build PyGreSQL without support for the
+memory size functions, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build_ext</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">memory</span><span class="o">-</span><span class="n">size</span>
+</pre></div>
+</div>
+<p>By default, PyGreSQL is compiled with support for all features available in the
+installed PostgreSQL version, and you will get warnings for the features that
+are not supported in this version. You can also explicitly require a feature in
+order to get an error if it is not available, for instance:</p>
+<blockquote>
+<div><p>python setup.py build_ext –memory-size</p>
+</div></blockquote>
+<p>You can find out all possible build options with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build_ext</span> <span class="o">--</span><span class="n">help</span>
+</pre></div>
+</div>
+<p>Alternatively, you can also use the corresponding C preprocessor macros like
+<code class="docutils literal notranslate"><span class="pre">MEMORY_SIZE</span></code> directly (see the next section).</p>
+<p>Note that if you build PyGreSQL with support for newer features that are not
+available in the PQLib installed on the runtime system, you may get an error
+when importing PyGreSQL, since these features are missing in the shared library
+which will prevent Python from loading it.</p>
+</section>
+<section id="compiling-manually">
+<h3>Compiling Manually<a class="headerlink" href="#compiling-manually" title="Link to this heading">¶</a></h3>
+<p>The source file for compiling the C extension module is pgmodule.c.
+You have two options. You can compile PyGreSQL as a stand-alone module
+or you can build it into the Python interpreter.</p>
+<section id="stand-alone">
+<h4>Stand-Alone<a class="headerlink" href="#stand-alone" title="Link to this heading">¶</a></h4>
+<ul>
+<li><p>In the directory containing <code class="docutils literal notranslate"><span class="pre">pgmodule.c</span></code>, run the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>cc -fpic -shared -o _pg.so -I$PYINC -I$PGINC -I$PSINC -L$PGLIB -lpq pgmodule.c
+</pre></div>
+</div>
+<p>where you have to set:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PYINC</span> <span class="o">=</span> <span class="n">path</span> <span class="n">to</span> <span class="n">the</span> <span class="n">Python</span> <span class="n">include</span> <span class="n">files</span>
+        <span class="p">(</span><span class="n">usually</span> <span class="n">something</span> <span class="n">like</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">python</span><span class="p">)</span>
+<span class="n">PGINC</span> <span class="o">=</span> <span class="n">path</span> <span class="n">to</span> <span class="n">the</span> <span class="n">PostgreSQL</span> <span class="n">client</span> <span class="n">include</span> <span class="n">files</span>
+        <span class="p">(</span><span class="n">something</span> <span class="n">like</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">pgsql</span> <span class="ow">or</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">postgresql</span><span class="p">)</span>
+<span class="n">PSINC</span> <span class="o">=</span> <span class="n">path</span> <span class="n">to</span> <span class="n">the</span> <span class="n">PostgreSQL</span> <span class="n">server</span> <span class="n">include</span> <span class="n">files</span>
+        <span class="p">(</span><span class="n">like</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">pgsql</span><span class="o">/</span><span class="n">server</span> <span class="ow">or</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">postgresql</span><span class="o">/</span><span class="n">server</span><span class="p">)</span>
+<span class="n">PGLIB</span> <span class="o">=</span> <span class="n">path</span> <span class="n">to</span> <span class="n">the</span> <span class="n">PostgreSQL</span> <span class="nb">object</span> <span class="n">code</span> <span class="n">libraries</span> <span class="p">(</span><span class="n">usually</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you are not sure about the above paths, try something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>PYINC=`find /usr -name Python.h`
+PGINC=`find /usr -name libpq-fe.h`
+PSINC=`find /usr -name postgres.h`
+PGLIB=`find /usr -name libpq.so`
+</pre></div>
+</div>
+<p>If you have the <code class="docutils literal notranslate"><span class="pre">pg_config</span></code> tool installed, you can set:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>PGINC=`pg_config --includedir`
+PSINC=`pg_config --includedir-server`
+PGLIB=`pg_config --libdir`
+</pre></div>
+</div>
+<p>Some options may be added to this line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">DMEMORY_SIZE</span> <span class="o">=</span> <span class="n">support</span> <span class="n">memory</span> <span class="n">size</span> <span class="n">function</span> <span class="p">(</span><span class="n">PostgreSQL</span> <span class="mi">12</span> <span class="ow">or</span> <span class="n">newer</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>On some systems you may need to include <code class="docutils literal notranslate"><span class="pre">-lcrypt</span></code> in the list of libraries
+to make it compile.</p>
+</li>
+<li><p>Test the new module. Something like the following should work:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python
+
+&gt;&gt;&gt; import _pg
+&gt;&gt;&gt; db = _pg.connect(&#39;thilo&#39;,&#39;localhost&#39;)
+&gt;&gt;&gt; db.query(&quot;INSERT INTO test VALUES (&#39;ping&#39;,&#39;pong&#39;)&quot;)
+18304
+&gt;&gt;&gt; db.query(&quot;SELECT * FROM test&quot;)
+eins|zwei
+----+----
+ping|pong
+(1 row)
+</pre></div>
+</div>
+</li>
+<li><p>Finally, move the <code class="docutils literal notranslate"><span class="pre">_pg.so</span></code>, <code class="docutils literal notranslate"><span class="pre">pg.py</span></code>, and <code class="docutils literal notranslate"><span class="pre">pgdb.py</span></code> to a directory in
+your <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code>. A good place would be <code class="docutils literal notranslate"><span class="pre">/usr/lib/python/site-packages</span></code>
+if your Python modules are in <code class="docutils literal notranslate"><span class="pre">/usr/lib/python</span></code>.</p></li>
+</ul>
+</section>
+<section id="built-in-to-python-interpreter">
+<h4>Built-in to Python interpreter<a class="headerlink" href="#built-in-to-python-interpreter" title="Link to this heading">¶</a></h4>
+<ul>
+<li><p>Find the directory where your <code class="docutils literal notranslate"><span class="pre">Setup</span></code> file lives (usually in the <code class="docutils literal notranslate"><span class="pre">Modules</span></code>
+subdirectory) in the Python source hierarchy and copy or symlink the
+<code class="docutils literal notranslate"><span class="pre">pgmodule.c</span></code> file there.</p></li>
+<li><p>Add the following line to your ‘Setup’ file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>_pg  pgmodule.c -I$PGINC -I$PSINC -L$PGLIB -lpq
+</pre></div>
+</div>
+<p>where:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PGINC</span> <span class="o">=</span> <span class="n">path</span> <span class="n">to</span> <span class="n">the</span> <span class="n">PostgreSQL</span> <span class="n">client</span> <span class="n">include</span> <span class="n">files</span> <span class="p">(</span><span class="n">see</span> <span class="n">above</span><span class="p">)</span>
+<span class="n">PSINC</span> <span class="o">=</span> <span class="n">path</span> <span class="n">to</span> <span class="n">the</span> <span class="n">PostgreSQL</span> <span class="n">server</span> <span class="n">include</span> <span class="n">files</span> <span class="p">(</span><span class="n">see</span> <span class="n">above</span><span class="p">)</span>
+<span class="n">PGLIB</span> <span class="o">=</span> <span class="n">path</span> <span class="n">to</span> <span class="n">the</span> <span class="n">PostgreSQL</span> <span class="nb">object</span> <span class="n">code</span> <span class="n">libraries</span> <span class="p">(</span><span class="n">see</span> <span class="n">above</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Some options may be added to this line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">DMEMORY_SIZE</span> <span class="o">=</span> <span class="n">support</span> <span class="n">memory</span> <span class="n">size</span> <span class="n">function</span> <span class="p">(</span><span class="n">PostgreSQL</span> <span class="mi">12</span> <span class="ow">or</span> <span class="n">newer</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>On some systems you may need to include <code class="docutils literal notranslate"><span class="pre">-lcrypt</span></code> in the list of libraries
+to make it compile.</p>
+</li>
+<li><p>If you want a shared module, make sure that the <code class="docutils literal notranslate"><span class="pre">shared</span></code> keyword is
+uncommented and add the above line below it. You used to need to install
+your shared modules with <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">sharedinstall</span></code> but this no longer seems
+to be true.</p></li>
+<li><p>Copy <code class="docutils literal notranslate"><span class="pre">pg.py</span></code> to the lib directory where the rest of your modules are.
+For example, that’s <code class="docutils literal notranslate"><span class="pre">/usr/local/lib/Python</span></code> on my system.</p></li>
+<li><p>Rebuild Python from the root directory of the Python source hierarchy by
+running <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">-f</span> <span class="pre">Makefile.pre.in</span> <span class="pre">boot</span></code> and <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">&amp;&amp;</span> <span class="pre">make</span> <span class="pre">install</span></code>.</p></li>
+<li><p>For more details read the documentation at the top of <code class="docutils literal notranslate"><span class="pre">Makefile.pre.in</span></code>.</p></li>
+</ul>
+</section>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/pygresql.png" alt="Logo of PyGreSQL"/>
+            </a></p>
+<h1 class="logo"><a href="../index.html">PyGreSQL</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About PyGreSQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../copyright.html">Copyright notice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../download/index.html">Download information</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">The PyGreSQL documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../community/index.html">PyGreSQL Development and Support</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">The PyGreSQL documentation</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">The PyGreSQL documentation</a></li>
+      <li>Next: <a href="changelog.html" title="next chapter">ChangeLog</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, The PyGreSQL team.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/contents/install.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

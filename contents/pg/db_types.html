@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>DbTypes – The internal cache for database types &#8212; PyGreSQL 6.1.0</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=6340cb70"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="copyright" title="Copyright" href="../../copyright.html" />
+    <link rel="next" title="Remarks on Adaptation and Typecasting" href="adaptation.html" />
+    <link rel="prev" title="The Notification Handler" href="notification.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="dbtypes-the-internal-cache-for-database-types">
+<h1>DbTypes – The internal cache for database types<a class="headerlink" href="#dbtypes-the-internal-cache-for-database-types" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pg.DbTypes">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pg.</span></span><span class="sig-name descname"><span class="pre">DbTypes</span></span><a class="headerlink" href="#pg.DbTypes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+<p>The <a class="reference internal" href="#pg.DbTypes" title="pg.DbTypes"><code class="xref py py-class docutils literal notranslate"><span class="pre">DbTypes</span></code></a> object is essentially a dictionary mapping PostgreSQL
+internal type names and type OIDs to PyGreSQL “type names” (which are also
+returned by <a class="reference internal" href="db_wrapper.html#pg.DB.get_attnames" title="pg.DB.get_attnames"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.get_attnames()</span></code></a> as dictionary values).</p>
+<p>These type names are strings which are equal to either the simple PyGreSQL
+names or to the more fine-grained registered PostgreSQL type names if these
+have been enabled with <a class="reference internal" href="db_wrapper.html#pg.DB.use_regtypes" title="pg.DB.use_regtypes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.use_regtypes()</span></code></a>. Type names are strings that
+are augmented with additional information about the associated PostgreSQL
+type that can be inspected using the following attributes:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>oid</em> – the PostgreSQL type OID</p></li>
+<li><p><em>pgtype</em> – the internal PostgreSQL data type name</p></li>
+<li><p><em>regtype</em> – the registered PostgreSQL data type name</p></li>
+<li><p><em>simple</em> – the more coarse-grained PyGreSQL type name</p></li>
+<li><p><em>typlen</em> – internal size of the type, negative if variable</p></li>
+<li><p><em>typtype</em> – <cite>b</cite> = base type, <cite>c</cite> = composite type etc.</p></li>
+<li><p><em>category</em> – <cite>A</cite> = Array, <cite>b</cite> =Boolean, <cite>C</cite> = Composite etc.</p></li>
+<li><p><em>delim</em> – delimiter for array types</p></li>
+<li><p><em>relid</em> – corresponding table for composite types</p></li>
+<li><p><em>attnames</em> – attributes for composite types</p></li>
+</ul>
+</div></blockquote>
+<p>For details, see the PostgreSQL documentation on <a class="reference external" href="http://www.postgresql.org/docs/current/static/catalog-pg-type.html">pg_type</a>.</p>
+<p>In addition to the dictionary methods, the <a class="reference internal" href="#pg.DbTypes" title="pg.DbTypes"><code class="xref py py-class docutils literal notranslate"><span class="pre">DbTypes</span></code></a> class also
+provides the following methods:</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DbTypes.get_attnames">
+<span class="sig-prename descclassname"><span class="pre">DbTypes.</span></span><span class="sig-name descname"><span class="pre">get_attnames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">typ</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DbTypes.get_attnames" title="Link to this definition">¶</a></dt>
+<dd><p>Get the names and types of the fields of composite types</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>typ</strong> (<em>str</em><em> or </em><em>int</em>) – PostgreSQL type name or OID of a composite type</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an ordered dictionary mapping field names to type names</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DbTypes.get_typecast">
+<span class="sig-prename descclassname"><span class="pre">DbTypes.</span></span><span class="sig-name descname"><span class="pre">get_typecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">typ</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DbTypes.get_typecast" title="Link to this definition">¶</a></dt>
+<dd><p>Get the cast function for the given database type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>typ</strong> (<em>str</em>) – PostgreSQL type name</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the typecast function for the specified type</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>function or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DbTypes.set_typecast">
+<span class="sig-prename descclassname"><span class="pre">DbTypes.</span></span><span class="sig-name descname"><span class="pre">set_typecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">typ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DbTypes.set_typecast" title="Link to this definition">¶</a></dt>
+<dd><p>Set a typecast function for the given database type(s)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>typ</strong> (<em>str</em><em> or </em><em>int</em>) – PostgreSQL type name or list of type names</p></li>
+<li><p><strong>cast</strong> – the typecast function to be set for the specified type(s)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>The typecast function must take one string object as argument and return a
+Python object into which the PostgreSQL type shall be casted.  If the function
+takes another parameter named <em>connection</em>, then the current database
+connection will also be passed to the typecast function.  This may sometimes
+be necessary to look up certain database settings.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DbTypes.reset_typecast">
+<span class="sig-prename descclassname"><span class="pre">DbTypes.</span></span><span class="sig-name descname"><span class="pre">reset_typecast</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">typ</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.DbTypes.reset_typecast" title="Link to this definition">¶</a></dt>
+<dd><p>Reset the typecasts for the specified (or all) type(s) to their defaults</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>typ</strong> (<em>str</em><em>, </em><em>list</em><em> or </em><em>None</em>) – PostgreSQL type name or list of type names,
+or None to reset all typecast functions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.DbTypes.typecast">
+<span class="sig-prename descclassname"><span class="pre">DbTypes.</span></span><span class="sig-name descname"><span class="pre">typecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">typ</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.DbTypes.typecast" title="Link to this definition">¶</a></dt>
+<dd><p>Cast the given value according to the given database type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>typ</strong> (<em>str</em>) – PostgreSQL type name or type code</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the casted value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that <a class="reference internal" href="#pg.DbTypes" title="pg.DbTypes"><code class="xref py py-class docutils literal notranslate"><span class="pre">DbTypes</span></code></a> object is always bound to a database connection.
+You can also get and set and reset typecast functions on a global level
+using the functions <a class="reference internal" href="module.html#pg.get_typecast" title="pg.get_typecast"><code class="xref py py-func docutils literal notranslate"><span class="pre">pg.get_typecast()</span></code></a> and <a class="reference internal" href="module.html#pg.set_typecast" title="pg.set_typecast"><code class="xref py py-func docutils literal notranslate"><span class="pre">pg.set_typecast()</span></code></a>.
+If you do this, the current database connections will continue to use their
+already cached typecast functions unless you reset the typecast functions
+by calling the <a class="reference internal" href="#pg.DbTypes.reset_typecast" title="pg.DbTypes.reset_typecast"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DbTypes.reset_typecast()</span></code></a> method on <a class="reference internal" href="db_wrapper.html#pg.DB.dbtypes" title="pg.DB.dbtypes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">DB.dbtypes</span></code></a>
+objects of the running connections.</p>
+<p>Also note that the typecasting for all of the basic types happens already
+in the C low-level extension module.  The typecast functions that can be
+set with the above methods are only called for the types that are not
+already supported by the C extension.</p>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/pygresql.png" alt="Logo of PyGreSQL"/>
+            </a></p>
+<h1 class="logo"><a href="../../index.html">PyGreSQL</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">About PyGreSQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../copyright.html">Copyright notice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../download/index.html">Download information</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">The PyGreSQL documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#contents">Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../community/index.html">PyGreSQL Development and Support</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">The PyGreSQL documentation</a><ul>
+  <li><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pg</span></code> — The Classic PyGreSQL Interface</a><ul>
+      <li>Previous: <a href="notification.html" title="previous chapter">The Notification Handler</a></li>
+      <li>Next: <a href="adaptation.html" title="next chapter">Remarks on Adaptation and Typecasting</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, The PyGreSQL team.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/contents/pg/db_types.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

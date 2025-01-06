@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Type – Type objects and constructors &#8212; PyGreSQL 6.1.0</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=6340cb70"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="copyright" title="Copyright" href="../../copyright.html" />
+    <link rel="next" title="TypeCache – The internal cache for database types" href="typecache.html" />
+    <link rel="prev" title="Cursor – The cursor object" href="cursor.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="type-type-objects-and-constructors">
+<h1>Type – Type objects and constructors<a class="headerlink" href="#type-type-objects-and-constructors" title="Link to this heading">¶</a></h1>
+<section id="type-constructors">
+<span id="id1"></span><h2>Type constructors<a class="headerlink" href="#type-constructors" title="Link to this heading">¶</a></h2>
+<p>For binding to an operation’s input parameters, PostgreSQL needs to have
+the input in a particular format.  However, from the parameters to the
+<a class="reference internal" href="cursor.html#pgdb.Cursor.execute" title="pgdb.Cursor.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Cursor.execute()</span></code></a> and <a class="reference internal" href="cursor.html#pgdb.Cursor.executemany" title="pgdb.Cursor.executemany"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Cursor.executemany()</span></code></a> methods it is not
+always obvious as which PostgreSQL data types they shall be bound.
+For instance, a Python string could be bound as a simple <code class="docutils literal notranslate"><span class="pre">char</span></code> value,
+or also as a <code class="docutils literal notranslate"><span class="pre">date</span></code> or a <code class="docutils literal notranslate"><span class="pre">time</span></code>.  Or a list could be bound as a
+<code class="docutils literal notranslate"><span class="pre">array</span></code> or a <code class="docutils literal notranslate"><span class="pre">json</span></code> object.  To make the intention clear in such cases,
+you can wrap the parameters in type helper objects.  PyGreSQL provides the
+constructors defined below to create such objects that can hold special values.
+When passed to the cursor methods, PyGreSQL can then detect the proper type
+of the input parameter and bind it accordingly.</p>
+<p>The <a class="reference internal" href="index.html#module-pgdb" title="pgdb"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pgdb</span></code></a> module exports the following type constructors as part of
+the DB-API 2 standard:</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pgdb.Date">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">Date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">day</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pgdb.Date" title="Link to this definition">¶</a></dt>
+<dd><p>Construct an object holding a date value</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pgdb.Time">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">Time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hour</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">minute</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">second</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">microsecond</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">tzinfo</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pgdb.Time" title="Link to this definition">¶</a></dt>
+<dd><p>Construct an object holding a time value</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pgdb.Timestamp">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">Timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">day</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">hour</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">minute</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">second</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">microsecond</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">tzinfo</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pgdb.Timestamp" title="Link to this definition">¶</a></dt>
+<dd><p>Construct an object holding a time stamp value</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pgdb.DateFromTicks">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">DateFromTicks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ticks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pgdb.DateFromTicks" title="Link to this definition">¶</a></dt>
+<dd><p>Construct an object holding a date value from the given <em>ticks</em> value</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pgdb.TimeFromTicks">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">TimeFromTicks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ticks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pgdb.TimeFromTicks" title="Link to this definition">¶</a></dt>
+<dd><p>Construct an object holding a time value from the given <em>ticks</em> value</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pgdb.TimestampFromTicks">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">TimestampFromTicks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ticks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pgdb.TimestampFromTicks" title="Link to this definition">¶</a></dt>
+<dd><p>Construct an object holding a time stamp from the given <em>ticks</em> value</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pgdb.Binary">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">Binary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pgdb.Binary" title="Link to this definition">¶</a></dt>
+<dd><p>Construct an object capable of holding a (long) binary string value</p>
+</dd></dl>
+
+<p>Additionally, PyGreSQL provides the following constructors for PostgreSQL
+specific data types:</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pgdb.Interval">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">Interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">days</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minutes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">microseconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pgdb.Interval" title="Link to this definition">¶</a></dt>
+<dd><p>Construct an object holding a time interval value</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="pgdb.Uuid">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">Uuid</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">hex</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">bytes</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">bytes_le</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">int</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pgdb.Uuid" title="Link to this definition">¶</a></dt>
+<dd><p>Construct an object holding a UUID value</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="pgdb.Hstore">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">Hstore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pgdb.Hstore" title="Link to this definition">¶</a></dt>
+<dd><p>Construct a wrapper for holding an hstore dictionary</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="pgdb.Json">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">Json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">encode</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pgdb.Json" title="Link to this definition">¶</a></dt>
+<dd><p>Construct a wrapper for holding an object serializable to JSON</p>
+<p>You can pass an optional serialization function as a parameter.
+By default, PyGreSQL uses <code class="xref py py-func docutils literal notranslate"><span class="pre">json.dumps()</span></code> to serialize it.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pgdb.Literal">
+<span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">Literal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sql</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pgdb.Literal" title="Link to this definition">¶</a></dt>
+<dd><p>Construct a wrapper for holding a literal SQL string</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+<p>Example for using a type constructor:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;create table jsondata (data jsonb)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;John Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;kids&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Johnnie&#39;</span><span class="p">,</span> <span class="s1">&#39;Janie&#39;</span><span class="p">]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;insert into jsondata values (</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">Json</span><span class="p">(</span><span class="n">data</span><span class="p">)])</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>SQL <code class="docutils literal notranslate"><span class="pre">NULL</span></code> values are always represented by the Python <em>None</em> singleton
+on input and output.</p>
+</div>
+</section>
+<section id="type-objects">
+<span id="id2"></span><h2>Type objects<a class="headerlink" href="#type-objects" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pgdb.DbType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pgdb.</span></span><span class="sig-name descname"><span class="pre">DbType</span></span><a class="headerlink" href="#pgdb.DbType" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>The <a class="reference internal" href="cursor.html#pgdb.Cursor.description" title="pgdb.Cursor.description"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Cursor.description</span></code></a> attribute returns information about each
+of the result columns of a query.  The <em>type_code</em> must compare equal to one
+of the <a class="reference internal" href="#pgdb.DbType" title="pgdb.DbType"><code class="xref py py-class docutils literal notranslate"><span class="pre">DbType</span></code></a> objects defined below.  Type objects can be equal to
+more than one type code (e.g. <code class="xref py py-class docutils literal notranslate"><span class="pre">DATETIME</span></code> is equal to the type codes
+for <code class="docutils literal notranslate"><span class="pre">date</span></code>, <code class="docutils literal notranslate"><span class="pre">time</span></code> and <code class="docutils literal notranslate"><span class="pre">timestamp</span></code> columns).</p>
+<p>The pgdb module exports the following <a class="reference internal" href="#pgdb.DbType" title="pgdb.DbType"><code class="xref py py-class docutils literal notranslate"><span class="pre">DbType</span></code></a> objects as part of the
+DB-API 2 standard:</p>
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">STRING</span></span></dt>
+<dd><p>Used to describe columns that are string-based (e.g. <code class="docutils literal notranslate"><span class="pre">char</span></code>, <code class="docutils literal notranslate"><span class="pre">varchar</span></code>, <code class="docutils literal notranslate"><span class="pre">text</span></code>)</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">BINARY</span></span></dt>
+<dd><p>Used to describe (long) binary columns (<code class="docutils literal notranslate"><span class="pre">bytea</span></code>)</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">NUMBER</span></span></dt>
+<dd><p>Used to describe numeric columns (e.g. <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">numeric</span></code>, <code class="docutils literal notranslate"><span class="pre">money</span></code>)</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">DATETIME</span></span></dt>
+<dd><p>Used to describe date/time columns (e.g. <code class="docutils literal notranslate"><span class="pre">date</span></code>, <code class="docutils literal notranslate"><span class="pre">time</span></code>, <code class="docutils literal notranslate"><span class="pre">timestamp</span></code>, <code class="docutils literal notranslate"><span class="pre">interval</span></code>)</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">ROWID</span></span></dt>
+<dd><p>Used to describe the <code class="docutils literal notranslate"><span class="pre">oid</span></code> column of PostgreSQL database tables</p>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The following more specific type objects are not part of the DB-API 2 standard.</p>
+</div>
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">BOOL</span></span></dt>
+<dd><p>Used to describe <code class="docutils literal notranslate"><span class="pre">boolean</span></code> columns</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">SMALLINT</span></span></dt>
+<dd><p>Used to describe <code class="docutils literal notranslate"><span class="pre">smallint</span></code> columns</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">INTEGER</span></span></dt>
+<dd><p>Used to describe <code class="docutils literal notranslate"><span class="pre">integer</span></code> columns</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">LONG</span></span></dt>
+<dd><p>Used to describe <code class="docutils literal notranslate"><span class="pre">bigint</span></code> columns</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">FLOAT</span></span></dt>
+<dd><p>Used to describe <code class="docutils literal notranslate"><span class="pre">float</span></code> columns</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">NUMERIC</span></span></dt>
+<dd><p>Used to describe <code class="docutils literal notranslate"><span class="pre">numeric</span></code> columns</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">MONEY</span></span></dt>
+<dd><p>Used to describe <code class="docutils literal notranslate"><span class="pre">money</span></code> columns</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">DATE</span></span></dt>
+<dd><p>Used to describe <code class="docutils literal notranslate"><span class="pre">date</span></code> columns</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">TIME</span></span></dt>
+<dd><p>Used to describe <code class="docutils literal notranslate"><span class="pre">time</span></code> columns</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">TIMESTAMP</span></span></dt>
+<dd><p>Used to describe <code class="docutils literal notranslate"><span class="pre">timestamp</span></code> columns</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">INTERVAL</span></span></dt>
+<dd><p>Used to describe date and time <code class="docutils literal notranslate"><span class="pre">interval</span></code> columns</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">UUID</span></span></dt>
+<dd><p>Used to describe <code class="docutils literal notranslate"><span class="pre">uuid</span></code> columns</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">HSTORE</span></span></dt>
+<dd><p>Used to describe <code class="docutils literal notranslate"><span class="pre">hstore</span></code> columns</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">JSON</span></span></dt>
+<dd><p>Used to describe <code class="docutils literal notranslate"><span class="pre">json</span></code> and <code class="docutils literal notranslate"><span class="pre">jsonb</span></code> columns</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">ARRAY</span></span></dt>
+<dd><p>Used to describe columns containing PostgreSQL arrays</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">RECORD</span></span></dt>
+<dd><p>Used to describe columns containing PostgreSQL records</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+<p>Example for using some type objects:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;create table jsondata (created date, data jsonb)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;select * from jsondata&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">created</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">type_code</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">created</span> <span class="o">==</span> <span class="n">DATE</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">created</span> <span class="o">==</span> <span class="n">DATETIME</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">created</span> <span class="o">==</span> <span class="n">TIME</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">==</span> <span class="n">JSON</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">==</span> <span class="n">STRING</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/pygresql.png" alt="Logo of PyGreSQL"/>
+            </a></p>
+<h1 class="logo"><a href="../../index.html">PyGreSQL</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">About PyGreSQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../copyright.html">Copyright notice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../download/index.html">Download information</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">The PyGreSQL documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#contents">Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../community/index.html">PyGreSQL Development and Support</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">The PyGreSQL documentation</a><ul>
+  <li><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pgdb</span></code> — The DB-API Compliant Interface</a><ul>
+      <li>Previous: <a href="cursor.html" title="previous chapter">Cursor – The cursor object</a></li>
+      <li>Next: <a href="typecache.html" title="next chapter">TypeCache – The internal cache for database types</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, The PyGreSQL team.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/contents/pgdb/types.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

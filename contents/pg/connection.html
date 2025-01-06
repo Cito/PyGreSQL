@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Connection – The connection object &#8212; PyGreSQL 6.1.0</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=6340cb70"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="copyright" title="Copyright" href="../../copyright.html" />
+    <link rel="next" title="The DB wrapper class" href="db_wrapper.html" />
+    <link rel="prev" title="Module functions and constants" href="module.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="connection-the-connection-object">
+<h1>Connection – The connection object<a class="headerlink" href="#connection-the-connection-object" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pg.Connection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pg.</span></span><span class="sig-name descname"><span class="pre">Connection</span></span><a class="headerlink" href="#pg.Connection" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>This object handles a connection to a PostgreSQL database. It embeds and
+hides all the parameters that define this connection, thus just leaving really
+significant parameters in function calls.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some methods give direct access to the connection socket.
+<em>Do not use them unless you really know what you are doing.</em>
+Some other methods give access to large objects.
+Refer to the PostgreSQL user manual for more information about these.</p>
+</div>
+<section id="query-execute-a-sql-command-string">
+<h2>query – execute a SQL command string<a class="headerlink" href="#query-execute-a-sql-command-string" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.query">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.query" title="Link to this definition">¶</a></dt>
+<dd><p>Execute a SQL command string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> (<em>str</em>) – SQL command</p></li>
+<li><p><strong>args</strong> – optional parameter values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>result values</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a>, None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – bad argument type, or too many arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+<li><p><strong>ValueError</strong> – empty SQL query or lost connection</p></li>
+<li><p><strong>pg.ProgrammingError</strong> – error in query</p></li>
+<li><p><strong>pg.InternalError</strong> – error during query processing</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method simply sends a SQL query to the database. If the query is an
+insert statement that inserted exactly one row into a table that has OIDs,
+the return value is the OID of the newly inserted row as an integer.
+If the query is an update or delete statement, or an insert statement that
+did not insert exactly one row, or on a table without OIDs, then the number
+of rows affected is returned as a string. If it is a statement that returns
+rows as a result (usually a select statement, but maybe also an
+<code class="docutils literal notranslate"><span class="pre">&quot;insert/update</span> <span class="pre">...</span> <span class="pre">returning&quot;</span></code> statement), this method returns
+a <a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a>. Otherwise, it returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<p>You can use the <a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a> object as an iterator that yields all results
+as tuples, or call <a class="reference internal" href="query.html#pg.Query.getresult" title="pg.Query.getresult"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.getresult()</span></code></a> to get the result as a list
+of tuples. Alternatively, you can call <a class="reference internal" href="query.html#pg.Query.dictresult" title="pg.Query.dictresult"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.dictresult()</span></code></a> or
+<a class="reference internal" href="query.html#pg.Query.dictiter" title="pg.Query.dictiter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.dictiter()</span></code></a> if you want to get the rows as dictionaries,
+or <a class="reference internal" href="query.html#pg.Query.namedresult" title="pg.Query.namedresult"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.namedresult()</span></code></a> or <a class="reference internal" href="query.html#pg.Query.namediter" title="pg.Query.namediter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.namediter()</span></code></a> if you want to
+get the rows as named tuples. You can also simply print the <a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a>
+object to show the query results on the console.</p>
+<p>The SQL command may optionally contain positional parameters of the form
+<code class="docutils literal notranslate"><span class="pre">$1</span></code>, <code class="docutils literal notranslate"><span class="pre">$2</span></code>, etc instead of literal data, in which case the values
+must be supplied separately as a tuple.  The values are substituted by
+the database in such a way that they don’t need to be escaped, making this
+an effective way to pass arbitrary or unknown data without worrying about
+SQL injection or syntax errors.</p>
+<p>If you don’t pass any parameters, the command string can also include
+multiple SQL commands (separated by semicolons). You will only get the
+return value for the last command in this case.</p>
+<p>When the database could not process the query, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">pg.ProgrammingError</span></code> or
+a <code class="xref py py-exc docutils literal notranslate"><span class="pre">pg.InternalError</span></code> is raised. You can check the <code class="docutils literal notranslate"><span class="pre">SQLSTATE</span></code> error code
+of this error by reading its <code class="xref py py-attr docutils literal notranslate"><span class="pre">sqlstate</span></code> attribute.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Name? &quot;</span><span class="p">)</span>
+<span class="n">phone</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;select phone from employees where name=$1&quot;</span><span class="p">,</span>
+    <span class="p">(</span><span class="n">name</span><span class="p">,))</span><span class="o">.</span><span class="n">getresult</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="send-query-executes-a-sql-command-string-asynchronously">
+<h2>send_query - executes a SQL command string asynchronously<a class="headerlink" href="#send-query-executes-a-sql-command-string-asynchronously" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.send_query">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">send_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.send_query" title="Link to this definition">¶</a></dt>
+<dd><p>Submits a command to the server without waiting for the result(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> (<em>str</em>) – SQL command</p></li>
+<li><p><strong>args</strong> – optional parameter values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a query object, as described below</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – bad argument type, or too many arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+<li><p><strong>ValueError</strong> – empty SQL query or lost connection</p></li>
+<li><p><strong>pg.ProgrammingError</strong> – error in query</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method is much the same as <a class="reference internal" href="#pg.Connection.query" title="pg.Connection.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.query()</span></code></a>, except that it
+returns without waiting for the query to complete. The database connection
+cannot be used for other operations until the query completes, but the
+application can do other things, including executing queries using other
+database connections. The application can call <code class="docutils literal notranslate"><span class="pre">select()</span></code> using the
+<code class="docutils literal notranslate"><span class="pre">fileno</span></code>  obtained by the connection’s <a class="reference internal" href="#pg.Connection.fileno" title="pg.Connection.fileno"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.fileno()</span></code></a> method
+to determine when the query has results to return.</p>
+<p>This method always returns a <a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a> object. This object differs
+from the <a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a> object returned by <a class="reference internal" href="#pg.Connection.query" title="pg.Connection.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.query()</span></code></a> in a
+few ways. Most importantly, when <a class="reference internal" href="#pg.Connection.send_query" title="pg.Connection.send_query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.send_query()</span></code></a> is used, the
+application must call one of the result-returning methods such as
+<a class="reference internal" href="query.html#pg.Query.getresult" title="pg.Query.getresult"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.getresult()</span></code></a> or <a class="reference internal" href="query.html#pg.Query.dictresult" title="pg.Query.dictresult"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.dictresult()</span></code></a> until it either raises
+an exception or returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<p>Otherwise, the database connection will be left in an unusable state.</p>
+<p>In cases when <a class="reference internal" href="#pg.Connection.query" title="pg.Connection.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.query()</span></code></a> would return something other than
+a <a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a> object, that result will be returned by calling one of
+the result-returning methods on the <a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a> object returned by
+<a class="reference internal" href="#pg.Connection.send_query" title="pg.Connection.send_query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.send_query()</span></code></a>. There’s one important difference in these
+result codes: if <a class="reference internal" href="#pg.Connection.query" title="pg.Connection.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.query()</span></code></a> returns <cite>None</cite>, the result-returning
+methods will return an empty string (<cite>‘’</cite>). It’s still necessary to call a
+result-returning method until it returns <cite>None</cite>.</p>
+<p><a class="reference internal" href="query.html#pg.Query.listfields" title="pg.Query.listfields"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.listfields()</span></code></a>, <a class="reference internal" href="query.html#pg.Query.fieldname" title="pg.Query.fieldname"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.fieldname()</span></code></a> and <a class="reference internal" href="query.html#pg.Query.fieldnum" title="pg.Query.fieldnum"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.fieldnum()</span></code></a>
+only work after a call to a result-returning method with a non-<code class="docutils literal notranslate"><span class="pre">None</span></code> return
+value. Calling <code class="docutils literal notranslate"><span class="pre">len()</span></code> on a <a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a> object returns the number of rows
+of the previous result-returning method.</p>
+<p>If multiple semi-colon-delimited statements are passed to
+<a class="reference internal" href="#pg.Connection.query" title="pg.Connection.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.query()</span></code></a>, only the results of the last statement are returned
+in the <a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a> object. With <a class="reference internal" href="#pg.Connection.send_query" title="pg.Connection.send_query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.send_query()</span></code></a>, all results
+are returned. Each result set will be returned by a separate call to
+<a class="reference internal" href="query.html#pg.Query.getresult" title="pg.Query.getresult"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.getresult()</span></code></a> or other result-returning methods.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.2.</span></p>
+</div>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Name? &quot;</span><span class="p">)</span>
+<span class="n">query</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">send_query</span><span class="p">(</span><span class="s2">&quot;select phone from employees where name=$1&quot;</span><span class="p">,</span>
+                      <span class="p">(</span><span class="n">name</span><span class="p">,))</span>
+<span class="n">phone</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">getresult</span><span class="p">()</span>
+<span class="n">query</span><span class="o">.</span><span class="n">getresult</span><span class="p">()</span>  <span class="c1"># to close the query</span>
+
+<span class="c1"># Run two queries in one round trip:</span>
+<span class="c1"># (Note that you cannot use a union here</span>
+<span class="c1"># when the result sets have different row types.)</span>
+<span class="n">query</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">send_query</span><span class="p">(</span><span class="s2">&quot;select a,b,c from x where d=e;</span>
+                      <span class="s2">&quot;select e,f from y where g&quot;</span><span class="p">)</span>
+<span class="n">result_x</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">dictresult</span><span class="p">()</span>
+<span class="n">result_y</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">dictresult</span><span class="p">()</span>
+<span class="n">query</span><span class="o">.</span><span class="n">dictresult</span><span class="p">()</span>  <span class="c1"># to close the query</span>
+
+<span class="c1"># Using select() to wait for the query to be ready:</span>
+<span class="n">query</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">send_query</span><span class="p">(</span><span class="s2">&quot;select pg_sleep(20)&quot;</span><span class="p">)</span>
+<span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">select</span><span class="p">([</span><span class="n">con</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="n">other</span><span class="p">,</span> <span class="n">sockets</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[])</span>
+<span class="k">if</span> <span class="n">con</span><span class="o">.</span><span class="n">fileno</span><span class="p">()</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">getresult</span><span class="p">()</span>
+    <span class="n">query</span><span class="o">.</span><span class="n">getresult</span><span class="p">()</span>  <span class="c1"># to close the query</span>
+
+<span class="c1"># Concurrent queries on separate connections:</span>
+<span class="n">con1</span> <span class="o">=</span> <span class="n">connect</span><span class="p">()</span>
+<span class="n">con2</span> <span class="o">=</span> <span class="n">connect</span><span class="p">()</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">con1</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;begin; set transaction isolation level repeatable read;&quot;</span>
+               <span class="s2">&quot;select pg_export_snapshot();&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">single</span><span class="p">()</span>
+<span class="n">con2</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;begin; set transaction isolation level repeatable read;&quot;</span>
+           <span class="sa">f</span><span class="s2">&quot;set transaction snapshot &#39;</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+<span class="n">q1</span> <span class="o">=</span> <span class="n">con1</span><span class="o">.</span><span class="n">send_query</span><span class="p">(</span><span class="s2">&quot;select a,b,c from x where d=e&quot;</span><span class="p">)</span>
+<span class="n">q2</span> <span class="o">=</span> <span class="n">con2</span><span class="o">.</span><span class="n">send_query</span><span class="p">(</span><span class="s2">&quot;select e,f from y where g&quot;</span><span class="p">)</span>
+<span class="n">r1</span> <span class="o">=</span> <span class="n">q1</span><span class="o">.</span><span class="n">getresult</span><span class="p">()</span>
+<span class="n">q1</span><span class="o">.</span><span class="n">getresult</span><span class="p">()</span>
+<span class="n">r2</span> <span class="o">=</span> <span class="n">q2</span><span class="o">.</span><span class="n">getresult</span><span class="p">()</span>
+<span class="n">q2</span><span class="o">.</span><span class="n">getresult</span><span class="p">()</span>
+<span class="n">con1</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;commit&quot;</span><span class="p">)</span>
+<span class="n">con2</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;commit&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="query-prepared-execute-a-prepared-statement">
+<h2>query_prepared – execute a prepared statement<a class="headerlink" href="#query-prepared-execute-a-prepared-statement" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.query_prepared">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">query_prepared</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.query_prepared" title="Link to this definition">¶</a></dt>
+<dd><p>Execute a prepared statement</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of the prepared statement</p></li>
+<li><p><strong>args</strong> – optional parameter values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>result values</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a>, None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – bad argument type, or too many arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+<li><p><strong>ValueError</strong> – empty SQL query or lost connection</p></li>
+<li><p><strong>pg.ProgrammingError</strong> – error in query</p></li>
+<li><p><strong>pg.InternalError</strong> – error during query processing</p></li>
+<li><p><strong>pg.OperationalError</strong> – prepared statement does not exist</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method works exactly like <a class="reference internal" href="#pg.Connection.query" title="pg.Connection.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.query()</span></code></a> except that instead
+of passing the command itself, you pass the name of a prepared statement.
+An empty name corresponds to the unnamed statement.  You must have previously
+created the corresponding named or unnamed statement with
+<a class="reference internal" href="#pg.Connection.prepare" title="pg.Connection.prepare"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.prepare()</span></code></a>, or an <code class="xref py py-exc docutils literal notranslate"><span class="pre">pg.OperationalError</span></code> will be raised.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.1.</span></p>
+</div>
+</section>
+<section id="prepare-create-a-prepared-statement">
+<h2>prepare – create a prepared statement<a class="headerlink" href="#prepare-create-a-prepared-statement" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.prepare">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">prepare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.prepare" title="Link to this definition">¶</a></dt>
+<dd><p>Create a prepared statement</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of the prepared statement</p></li>
+<li><p><strong>command</strong> (<em>str</em>) – SQL command</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – bad argument types, or wrong number of arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+<li><p><strong>pg.ProgrammingError</strong> – error in query or duplicate query</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method creates a prepared statement with the specified name for the
+given command for later execution with the <a class="reference internal" href="#pg.Connection.query_prepared" title="pg.Connection.query_prepared"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.query_prepared()</span></code></a>
+method. The name can be empty to create an unnamed statement, in which case
+any pre-existing unnamed statement is automatically replaced; otherwise a
+<code class="xref py py-exc docutils literal notranslate"><span class="pre">pg.ProgrammingError</span></code> is raised if the statement name is already defined
+in the current database session.</p>
+<p>The SQL command may optionally contain positional parameters of the form
+<code class="docutils literal notranslate"><span class="pre">$1</span></code>, <code class="docutils literal notranslate"><span class="pre">$2</span></code>, etc instead of literal data.  The corresponding values
+must then later be passed to the <a class="reference internal" href="#pg.Connection.query_prepared" title="pg.Connection.query_prepared"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.query_prepared()</span></code></a> method
+separately as a tuple.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.1.</span></p>
+</div>
+</section>
+<section id="describe-prepared-describe-a-prepared-statement">
+<h2>describe_prepared – describe a prepared statement<a class="headerlink" href="#describe-prepared-describe-a-prepared-statement" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.describe_prepared">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">describe_prepared</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.describe_prepared" title="Link to this definition">¶</a></dt>
+<dd><p>Describe a prepared statement</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of the prepared statement</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a></p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – bad argument type, or too many arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+<li><p><strong>pg.OperationalError</strong> – prepared statement does not exist</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method returns a <a class="reference internal" href="query.html#pg.Query" title="pg.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a> object describing the prepared
+statement with the given name.  You can also pass an empty name in order
+to describe the unnamed statement.  Information on the fields of the
+corresponding query can be obtained through the <a class="reference internal" href="query.html#pg.Query.listfields" title="pg.Query.listfields"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.listfields()</span></code></a>,
+<a class="reference internal" href="query.html#pg.Query.fieldname" title="pg.Query.fieldname"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.fieldname()</span></code></a> and <a class="reference internal" href="query.html#pg.Query.fieldnum" title="pg.Query.fieldnum"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Query.fieldnum()</span></code></a> methods.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.1.</span></p>
+</div>
+</section>
+<section id="reset-reset-the-connection">
+<h2>reset – reset the connection<a class="headerlink" href="#reset-reset-the-connection" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.reset">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.reset" title="Link to this definition">¶</a></dt>
+<dd><p>Reset the <a class="reference internal" href="index.html#module-pg" title="pg"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pg</span></code></a> connection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – too many (any) arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method resets the current database connection.</p>
+</section>
+<section id="poll-completes-an-asynchronous-connection">
+<h2>poll - completes an asynchronous connection<a class="headerlink" href="#poll-completes-an-asynchronous-connection" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.poll">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">poll</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.poll" title="Link to this definition">¶</a></dt>
+<dd><p>Complete an asynchronous <a class="reference internal" href="index.html#module-pg" title="pg"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pg</span></code></a> connection and get its state</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>state of the connection</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – too many (any) arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+<li><p><strong>pg.InternalError</strong> – some error occurred during pg connection</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>The database connection can be performed without any blocking calls.
+This allows the application mainline to perform other operations or perhaps
+connect to multiple databases concurrently. Once the connection is established,
+it’s no different from a connection made using blocking calls.</p>
+<p>The required steps are to pass the parameter <code class="docutils literal notranslate"><span class="pre">nowait=True</span></code> to  the
+<a class="reference internal" href="module.html#pg.connect" title="pg.connect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pg.connect()</span></code></a> call, then call <a class="reference internal" href="#pg.Connection.poll" title="pg.Connection.poll"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.poll()</span></code></a> until it either
+returns <a class="reference internal" href="module.html#pg.POLLING_OK" title="pg.POLLING_OK"><code class="xref py py-const docutils literal notranslate"><span class="pre">POLLING_OK</span></code></a> or raises an exception. To avoid blocking
+in <a class="reference internal" href="#pg.Connection.poll" title="pg.Connection.poll"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.poll()</span></code></a>, use <cite>select()</cite> or <cite>poll()</cite> to wait for the
+connection to be readable or writable, depending on the return code of the
+previous call to <a class="reference internal" href="#pg.Connection.poll" title="pg.Connection.poll"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.poll()</span></code></a>. The initial state of the connection
+is <a class="reference internal" href="module.html#pg.POLLING_WRITING" title="pg.POLLING_WRITING"><code class="xref py py-const docutils literal notranslate"><span class="pre">POLLING_WRITING</span></code></a>. The possible states are defined as constants in
+the <a class="reference internal" href="index.html#module-pg" title="pg"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pg</span></code></a> module (<a class="reference internal" href="module.html#pg.POLLING_OK" title="pg.POLLING_OK"><code class="xref py py-const docutils literal notranslate"><span class="pre">POLLING_OK</span></code></a>, <a class="reference internal" href="module.html#pg.POLLING_FAILED" title="pg.POLLING_FAILED"><code class="xref py py-const docutils literal notranslate"><span class="pre">POLLING_FAILED</span></code></a>,
+<a class="reference internal" href="module.html#pg.POLLING_READING" title="pg.POLLING_READING"><code class="xref py py-const docutils literal notranslate"><span class="pre">POLLING_READING</span></code></a> and <a class="reference internal" href="module.html#pg.POLLING_WRITING" title="pg.POLLING_WRITING"><code class="xref py py-const docutils literal notranslate"><span class="pre">POLLING_WRITING</span></code></a>).</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.2.</span></p>
+</div>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">con</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;testdb&#39;</span><span class="p">,</span> <span class="n">nowait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">fileno</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">fileno</span><span class="p">()</span>
+<span class="n">rd</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">wt</span> <span class="o">=</span> <span class="p">[</span><span class="n">fileno</span><span class="p">]</span>
+<span class="n">rc</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">POLLING_WRITING</span>
+<span class="k">while</span> <span class="n">rc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">POLLING_OK</span><span class="p">,</span> <span class="n">pg</span><span class="o">.</span><span class="n">POLLING_FAILED</span><span class="p">):</span>
+    <span class="n">ra</span><span class="p">,</span> <span class="n">wa</span><span class="p">,</span> <span class="n">xa</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">rd</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="p">[],</span> <span class="n">timeout</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ra</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">wa</span><span class="p">:</span>
+        <span class="n">timedout</span><span class="p">()</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">rc</span> <span class="o">==</span> <span class="n">pg</span><span class="o">.</span><span class="n">POLLING_READING</span><span class="p">:</span>
+        <span class="n">rd</span> <span class="o">=</span> <span class="p">[</span><span class="n">fileno</span><span class="p">]</span>
+        <span class="n">wt</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rd</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">wt</span> <span class="o">=</span> <span class="p">[</span><span class="n">fileno</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="cancel-abandon-processing-of-current-sql-command">
+<h2>cancel – abandon processing of current SQL command<a class="headerlink" href="#cancel-abandon-processing-of-current-sql-command" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.cancel">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.cancel" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – too many (any) arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method requests that the server abandon processing
+of the current SQL command.</p>
+</section>
+<section id="close-close-the-database-connection">
+<h2>close – close the database connection<a class="headerlink" href="#close-close-the-database-connection" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.close">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.close" title="Link to this definition">¶</a></dt>
+<dd><p>Close the <a class="reference internal" href="index.html#module-pg" title="pg"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pg</span></code></a> connection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – too many (any) arguments</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method closes the database connection. The connection will
+be closed in any case when the connection is deleted but this
+allows you to explicitly close it. It is mainly here to allow
+the DB-SIG API wrapper to implement a close function.</p>
+</section>
+<section id="transaction-get-the-current-transaction-state">
+<h2>transaction – get the current transaction state<a class="headerlink" href="#transaction-get-the-current-transaction-state" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.transaction">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">transaction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.transaction" title="Link to this definition">¶</a></dt>
+<dd><p>Get the current in-transaction status of the server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the current in-transaction status</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – too many (any) arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>The status returned by this method can be <a class="reference internal" href="module.html#pg.TRANS_IDLE" title="pg.TRANS_IDLE"><code class="xref py py-const docutils literal notranslate"><span class="pre">TRANS_IDLE</span></code></a> (currently idle),
+<a class="reference internal" href="module.html#pg.TRANS_ACTIVE" title="pg.TRANS_ACTIVE"><code class="xref py py-const docutils literal notranslate"><span class="pre">TRANS_ACTIVE</span></code></a> (a command is in progress), <a class="reference internal" href="module.html#pg.TRANS_INTRANS" title="pg.TRANS_INTRANS"><code class="xref py py-const docutils literal notranslate"><span class="pre">TRANS_INTRANS</span></code></a> (idle,
+in a valid transaction block), or <a class="reference internal" href="module.html#pg.TRANS_INERROR" title="pg.TRANS_INERROR"><code class="xref py py-const docutils literal notranslate"><span class="pre">TRANS_INERROR</span></code></a> (idle, in a failed
+transaction block).  <a class="reference internal" href="module.html#pg.TRANS_UNKNOWN" title="pg.TRANS_UNKNOWN"><code class="xref py py-const docutils literal notranslate"><span class="pre">TRANS_UNKNOWN</span></code></a> is reported if the connection is
+bad.  The status <a class="reference internal" href="module.html#pg.TRANS_ACTIVE" title="pg.TRANS_ACTIVE"><code class="xref py py-const docutils literal notranslate"><span class="pre">TRANS_ACTIVE</span></code></a> is reported only when a query has been
+sent to the server and not yet completed.</p>
+</section>
+<section id="parameter-get-a-current-server-parameter-setting">
+<h2>parameter – get a current server parameter setting<a class="headerlink" href="#parameter-get-a-current-server-parameter-setting" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.parameter">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.parameter" title="Link to this definition">¶</a></dt>
+<dd><p>Look up a current parameter setting of the server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – the name of the parameter to look up</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the current setting of the specified parameter</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str or None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – too many (any) arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Certain parameter values are reported by the server automatically at
+connection startup or whenever their values change.  This method can be used
+to interrogate these settings.  It returns the current value of a parameter
+if known, or <em>None</em> if the parameter is not known.</p>
+<p>You can use this method to check the settings of important parameters such as
+<cite>server_version</cite>, <cite>server_encoding</cite>, <cite>client_encoding</cite>, <cite>application_name</cite>,
+<cite>is_superuser</cite>, <cite>session_authorization</cite>, <cite>DateStyle</cite>, <cite>IntervalStyle</cite>,
+<cite>TimeZone</cite>, <cite>integer_datetimes</cite>, and <cite>standard_conforming_strings</cite>.</p>
+<p>Values that are not reported by this method can be requested using
+<a class="reference internal" href="db_wrapper.html#pg.DB.get_parameter" title="pg.DB.get_parameter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DB.get_parameter()</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.0.</span></p>
+</div>
+</section>
+<section id="date-format-get-the-currently-used-date-format">
+<h2>date_format – get the currently used date format<a class="headerlink" href="#date-format-get-the-currently-used-date-format" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.date_format">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">date_format</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.date_format" title="Link to this definition">¶</a></dt>
+<dd><p>Look up the date format currently being used by the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the current date format</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – too many (any) arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method returns the current date format used by the server.  Note that
+it is cheap to call this method, since there is no database query involved
+and the setting is also cached internally.  You will need the date format
+when you want to manually typecast dates and timestamps coming from the
+database instead of using the built-in typecast functions.  The date format
+returned by this method can be directly used with date formatting functions
+such as <code class="xref py py-meth docutils literal notranslate"><span class="pre">datetime.strptime()</span></code>.  It is derived from the current setting
+of the database parameter <code class="docutils literal notranslate"><span class="pre">DateStyle</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+</section>
+<section id="fileno-get-the-socket-used-to-connect-to-the-database">
+<h2>fileno – get the socket used to connect to the database<a class="headerlink" href="#fileno-get-the-socket-used-to-connect-to-the-database" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.fileno">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">fileno</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.fileno" title="Link to this definition">¶</a></dt>
+<dd><p>Get the socket used to connect to the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the socket id of the database connection</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – too many (any) arguments</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method returns the underlying socket id used to connect
+to the database. This is useful for use in select calls, etc.</p>
+</section>
+<section id="set-non-blocking-set-the-non-blocking-status-of-the-connection">
+<h2>set_non_blocking - set the non-blocking status of the connection<a class="headerlink" href="#set-non-blocking-set-the-non-blocking-status-of-the-connection" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.set_non_blocking">
+<span class="sig-prename descclassname"><span class="pre">pg.</span></span><span class="sig-name descname"><span class="pre">set_non_blocking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nb</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.set_non_blocking" title="Link to this definition">¶</a></dt>
+<dd><p>Set the non-blocking mode of the connection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nb</strong> (<em>bool</em>) – True to put the connection into non-blocking mode.
+False to put it into blocking mode.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – too many parameters</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Puts the socket connection into non-blocking mode or into blocking mode.
+This affects copy commands and large object operations, but not queries.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.2.</span></p>
+</div>
+</section>
+<section id="is-non-blocking-report-the-blocking-status-of-the-connection">
+<h2>is_non_blocking - report the blocking status of the connection<a class="headerlink" href="#is-non-blocking-report-the-blocking-status-of-the-connection" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.is_non_blocking">
+<span class="sig-prename descclassname"><span class="pre">pg.</span></span><span class="sig-name descname"><span class="pre">is_non_blocking</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.is_non_blocking" title="Link to this definition">¶</a></dt>
+<dd><p>get the non-blocking mode of the connection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the connection is in non-blocking mode.
+False if it is in blocking mode.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – too many parameters</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Returns True if the connection is in non-blocking mode, False otherwise.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.2.</span></p>
+</div>
+</section>
+<section id="getnotify-get-the-last-notify-from-the-server">
+<h2>getnotify – get the last notify from the server<a class="headerlink" href="#getnotify-get-the-last-notify-from-the-server" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.getnotify">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">getnotify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.getnotify" title="Link to this definition">¶</a></dt>
+<dd><p>Get the last notify from the server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>last notify from server</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple, None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – too many parameters</p></li>
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method tries to get a notify from the server (from the SQL statement
+NOTIFY). If the server returns no notify, the methods returns None.
+Otherwise, it returns a tuple (triplet) <em>(relname, pid, extra)</em>, where
+<em>relname</em> is the name of the notify, <em>pid</em> is the process id of the
+connection that triggered the notify, and <em>extra</em> is a payload string
+that has been sent with the notification. Remember to do a listen query
+first, otherwise <a class="reference internal" href="#pg.Connection.getnotify" title="pg.Connection.getnotify"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.getnotify()</span></code></a> will always return <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 4.1: </span>Support for payload strings was added in version 4.1.</p>
+</div>
+</section>
+<section id="inserttable-insert-an-iterable-into-a-table">
+<h2>inserttable – insert an iterable into a table<a class="headerlink" href="#inserttable-insert-an-iterable-into-a-table" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.inserttable">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">inserttable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.inserttable" title="Link to this definition">¶</a></dt>
+<dd><p>Insert a Python iterable into a database table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table</strong> (<em>str</em>) – the table name</p></li>
+<li><p><strong>values</strong> (<em>list</em>) – iterable of row values, which must be lists or tuples</p></li>
+<li><p><strong>columns</strong> (<em>list</em>) – list or tuple of column names</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – invalid connection, bad argument type, or too many arguments</p></li>
+<li><p><strong>MemoryError</strong> – insert buffer could not be allocated</p></li>
+<li><p><strong>ValueError</strong> – unsupported values</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method allows to <em>quickly</em> insert large blocks of data in a table.
+Internally, it uses the COPY command of the PostgreSQL database.
+The method takes an iterable of row values which must be tuples or lists
+of the same size, containing the values for each inserted row.
+These may contain string, integer, long or double (real) values.
+<code class="docutils literal notranslate"><span class="pre">columns</span></code> is an optional tuple or list of column names to be passed on
+to the COPY command.
+The number of rows affected is returned.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method doesn’t type check the fields according to the table definition;
+it just looks whether or not it knows how to handle such types.</p>
+</div>
+</section>
+<section id="get-set-cast-hook-fallback-typecast-function">
+<h2>get/set_cast_hook – fallback typecast function<a class="headerlink" href="#get-set-cast-hook-fallback-typecast-function" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.get_cast_hook">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">get_cast_hook</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.get_cast_hook" title="Link to this definition">¶</a></dt>
+<dd><p>Get the function that handles all external typecasting</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the current external typecast function</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>callable, None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>TypeError</strong> – too many (any) arguments</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This returns the callback function used by PyGreSQL to provide plug-in
+Python typecast functions for the connection.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.set_cast_hook">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">set_cast_hook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.set_cast_hook" title="Link to this definition">¶</a></dt>
+<dd><p>Set a function that will handle all external typecasting</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>func</strong> – the function to be used as a callback</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>TypeError</strong> – the specified notice receiver is not callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This methods allows setting a custom fallback function for providing
+Python typecast functions for the connection to supplement the C
+extension module.  If you set this function to <em>None</em>, then only the typecast
+functions implemented in the C extension module are enabled.  You normally
+would not want to change this.  Instead, you can use <a class="reference internal" href="module.html#pg.get_typecast" title="pg.get_typecast"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_typecast()</span></code></a> and
+<a class="reference internal" href="module.html#pg.set_typecast" title="pg.set_typecast"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_typecast()</span></code></a> to add or change the plug-in Python typecast functions.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.0.</span></p>
+</div>
+</section>
+<section id="get-set-notice-receiver-custom-notice-receiver">
+<h2>get/set_notice_receiver – custom notice receiver<a class="headerlink" href="#get-set-notice-receiver-custom-notice-receiver" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.get_notice_receiver">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">get_notice_receiver</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.get_notice_receiver" title="Link to this definition">¶</a></dt>
+<dd><p>Get the current notice receiver</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the current notice receiver callable</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>callable, None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>TypeError</strong> – too many (any) arguments</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method gets the custom notice receiver callback function that has
+been set with <a class="reference internal" href="#pg.Connection.set_notice_receiver" title="pg.Connection.set_notice_receiver"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.set_notice_receiver()</span></code></a>, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no
+custom notice receiver has ever been set on the connection.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.1.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.set_notice_receiver">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">set_notice_receiver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.set_notice_receiver" title="Link to this definition">¶</a></dt>
+<dd><p>Set a custom notice receiver</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>func</strong> – the custom notice receiver callback function</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>TypeError</strong> – the specified notice receiver is not callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method allows setting a custom notice receiver callback function.
+When a notice or warning message is received from the server,
+or generated internally by libpq, and the message level is below
+the one set with <code class="docutils literal notranslate"><span class="pre">client_min_messages</span></code>, the specified notice receiver
+function will be called. This function must take one parameter,
+the <code class="xref py py-class docutils literal notranslate"><span class="pre">Notice</span></code> object, which provides the following read-only
+attributes:</p>
+<blockquote>
+<div><dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Notice.pgcnx">
+<span class="sig-prename descclassname"><span class="pre">Notice.</span></span><span class="sig-name descname"><span class="pre">pgcnx</span></span><a class="headerlink" href="#pg.Notice.pgcnx" title="Link to this definition">¶</a></dt>
+<dd><p>the connection</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Notice.message">
+<span class="sig-prename descclassname"><span class="pre">Notice.</span></span><span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#pg.Notice.message" title="Link to this definition">¶</a></dt>
+<dd><p>the full message with a trailing newline</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Notice.severity">
+<span class="sig-prename descclassname"><span class="pre">Notice.</span></span><span class="sig-name descname"><span class="pre">severity</span></span><a class="headerlink" href="#pg.Notice.severity" title="Link to this definition">¶</a></dt>
+<dd><p>the level of the message, e.g. ‘NOTICE’ or ‘WARNING’</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Notice.primary">
+<span class="sig-prename descclassname"><span class="pre">Notice.</span></span><span class="sig-name descname"><span class="pre">primary</span></span><a class="headerlink" href="#pg.Notice.primary" title="Link to this definition">¶</a></dt>
+<dd><p>the primary human-readable error message</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Notice.detail">
+<span class="sig-prename descclassname"><span class="pre">Notice.</span></span><span class="sig-name descname"><span class="pre">detail</span></span><a class="headerlink" href="#pg.Notice.detail" title="Link to this definition">¶</a></dt>
+<dd><p>an optional secondary error message</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Notice.hint">
+<span class="sig-prename descclassname"><span class="pre">Notice.</span></span><span class="sig-name descname"><span class="pre">hint</span></span><a class="headerlink" href="#pg.Notice.hint" title="Link to this definition">¶</a></dt>
+<dd><p>an optional suggestion what to do about the problem</p>
+</dd></dl>
+
+</div></blockquote>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.1.</span></p>
+</div>
+</section>
+<section id="putline-write-a-line-to-the-server-socket">
+<h2>putline – write a line to the server socket<a class="headerlink" href="#putline-write-a-line-to-the-server-socket" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.putline">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">putline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.putline" title="Link to this definition">¶</a></dt>
+<dd><p>Write a line to the server socket</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>line</strong> (<em>str</em>) – line to be written</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>TypeError</strong> – invalid connection, bad parameter type, or too many parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method allows to directly write a string to the server socket.</p>
+</section>
+<section id="getline-get-a-line-from-server-socket">
+<h2>getline – get a line from server socket<a class="headerlink" href="#getline-get-a-line-from-server-socket" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.getline">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">getline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.getline" title="Link to this definition">¶</a></dt>
+<dd><p>Get a line from server socket</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the line read</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+<li><p><strong>TypeError</strong> – too many parameters</p></li>
+<li><p><strong>MemoryError</strong> – buffer overflow</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method allows to directly read a string from the server socket.</p>
+</section>
+<section id="endcopy-synchronize-client-and-server">
+<h2>endcopy – synchronize client and server<a class="headerlink" href="#endcopy-synchronize-client-and-server" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.endcopy">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">endcopy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.endcopy" title="Link to this definition">¶</a></dt>
+<dd><p>Synchronize client and server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – invalid connection</p></li>
+<li><p><strong>TypeError</strong> – too many parameters</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>The use of direct access methods may desynchronize client and server.
+This method ensure that client and server will be synchronized.</p>
+</section>
+<section id="locreate-create-a-large-object-in-the-database">
+<h2>locreate – create a large object in the database<a class="headerlink" href="#locreate-create-a-large-object-in-the-database" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.locreate">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">locreate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.locreate" title="Link to this definition">¶</a></dt>
+<dd><p>Create a large object in the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mode</strong> (<em>int</em>) – large object create mode</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>object handling the PostgreSQL large object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="large_objects.html#pg.LargeObject" title="pg.LargeObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">LargeObject</span></code></a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – invalid connection, bad parameter type, or too many parameters</p></li>
+<li><p><strong>pg.OperationalError</strong> – creation error</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method creates a large object in the database. The mode can be defined
+by OR-ing the constants defined in the <a class="reference internal" href="index.html#module-pg" title="pg"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pg</span></code></a> module (<a class="reference internal" href="module.html#pg.INV_READ" title="pg.INV_READ"><code class="xref py py-const docutils literal notranslate"><span class="pre">INV_READ</span></code></a>,
+and <a class="reference internal" href="module.html#pg.INV_WRITE" title="pg.INV_WRITE"><code class="xref py py-const docutils literal notranslate"><span class="pre">INV_WRITE</span></code></a>). Please refer to PostgreSQL user manual for a
+description of the mode values.</p>
+</section>
+<section id="getlo-build-a-large-object-from-given-oid">
+<h2>getlo – build a large object from given oid<a class="headerlink" href="#getlo-build-a-large-object-from-given-oid" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.getlo">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">getlo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.getlo" title="Link to this definition">¶</a></dt>
+<dd><p>Create a large object in the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>oid</strong> (<em>int</em>) – OID of the existing large object</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>object handling the PostgreSQL large object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="large_objects.html#pg.LargeObject" title="pg.LargeObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">LargeObject</span></code></a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – invalid connection, bad parameter type, or too many parameters</p></li>
+<li><p><strong>ValueError</strong> – bad OID value (0 is invalid_oid)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method allows reusing a previously created large object through the
+<a class="reference internal" href="large_objects.html#pg.LargeObject" title="pg.LargeObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">LargeObject</span></code></a> interface, provided the user has its OID.</p>
+</section>
+<section id="loimport-import-a-file-to-a-large-object">
+<h2>loimport – import a file to a large object<a class="headerlink" href="#loimport-import-a-file-to-a-large-object" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="pg.Connection.loimport">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">loimport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pg.Connection.loimport" title="Link to this definition">¶</a></dt>
+<dd><p>Import a file to a large object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – the name of the file to be imported</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>object handling the PostgreSQL large object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="large_objects.html#pg.LargeObject" title="pg.LargeObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">LargeObject</span></code></a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – invalid connection, bad argument type, or too many arguments</p></li>
+<li><p><strong>pg.OperationalError</strong> – error during file import</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This methods allows to create large objects in a very simple way. You just
+give the name of a file containing the data to be used.</p>
+</section>
+<section id="object-attributes">
+<h2>Object attributes<a class="headerlink" href="#object-attributes" title="Link to this heading">¶</a></h2>
+<p>Every <a class="reference internal" href="#pg.Connection" title="pg.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Connection</span></code></a> defines a set of read-only attributes that describe
+the connection and its status. These attributes are:</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Connection.host">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">host</span></span><a class="headerlink" href="#pg.Connection.host" title="Link to this definition">¶</a></dt>
+<dd><p>the host name of the server (str)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Connection.port">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">port</span></span><a class="headerlink" href="#pg.Connection.port" title="Link to this definition">¶</a></dt>
+<dd><p>the port of the server (int)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Connection.db">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">db</span></span><a class="headerlink" href="#pg.Connection.db" title="Link to this definition">¶</a></dt>
+<dd><p>the selected database (str)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Connection.options">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">options</span></span><a class="headerlink" href="#pg.Connection.options" title="Link to this definition">¶</a></dt>
+<dd><p>the connection options (str)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Connection.user">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">user</span></span><a class="headerlink" href="#pg.Connection.user" title="Link to this definition">¶</a></dt>
+<dd><p>user name on the database system (str)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Connection.protocol_version">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">protocol_version</span></span><a class="headerlink" href="#pg.Connection.protocol_version" title="Link to this definition">¶</a></dt>
+<dd><p>the frontend/backend protocol being used (int)</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.0.</span></p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Connection.server_version">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">server_version</span></span><a class="headerlink" href="#pg.Connection.server_version" title="Link to this definition">¶</a></dt>
+<dd><p>the backend version (int, e.g. 150400 for 15.4)</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 4.0.</span></p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Connection.status">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#pg.Connection.status" title="Link to this definition">¶</a></dt>
+<dd><p>the status of the connection (int: 1 = OK, 0 = bad)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Connection.error">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">error</span></span><a class="headerlink" href="#pg.Connection.error" title="Link to this definition">¶</a></dt>
+<dd><p>the last warning/error message from the server (str)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Connection.socket">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">socket</span></span><a class="headerlink" href="#pg.Connection.socket" title="Link to this definition">¶</a></dt>
+<dd><p>the file descriptor number of the connection socket to the server (int)</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.1.</span></p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Connection.backend_pid">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">backend_pid</span></span><a class="headerlink" href="#pg.Connection.backend_pid" title="Link to this definition">¶</a></dt>
+<dd><p>the PID of the backend process handling this connection (int)</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.1.</span></p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Connection.ssl_in_use">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">ssl_in_use</span></span><a class="headerlink" href="#pg.Connection.ssl_in_use" title="Link to this definition">¶</a></dt>
+<dd><p>this is True if the connection uses SSL, False if not</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.1.</span></p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pg.Connection.ssl_attributes">
+<span class="sig-prename descclassname"><span class="pre">Connection.</span></span><span class="sig-name descname"><span class="pre">ssl_attributes</span></span><a class="headerlink" href="#pg.Connection.ssl_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>SSL-related information about the connection (dict)</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 5.1.</span></p>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/pygresql.png" alt="Logo of PyGreSQL"/>
+            </a></p>
+<h1 class="logo"><a href="../../index.html">PyGreSQL</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">About PyGreSQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../copyright.html">Copyright notice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../download/index.html">Download information</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">The PyGreSQL documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#contents">Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../community/index.html">PyGreSQL Development and Support</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">The PyGreSQL documentation</a><ul>
+  <li><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pg</span></code> — The Classic PyGreSQL Interface</a><ul>
+      <li>Previous: <a href="module.html" title="previous chapter">Module functions and constants</a></li>
+      <li>Next: <a href="db_wrapper.html" title="next chapter">The DB wrapper class</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, The PyGreSQL team.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/contents/pg/connection.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

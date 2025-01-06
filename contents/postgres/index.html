@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>A PostgreSQL Primer &#8212; PyGreSQL 6.1.0</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=6340cb70"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="copyright" title="Copyright" href="../../copyright.html" />
+    <link rel="next" title="Basic examples" href="basic.html" />
+    <link rel="prev" title="Remarks on Adaptation and Typecasting" href="../pgdb/adaptation.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="a-postgresql-primer">
+<h1>A PostgreSQL Primer<a class="headerlink" href="#a-postgresql-primer" title="Link to this heading">¶</a></h1>
+<p>The examples in this chapter of the documentation have been taken
+from the PostgreSQL manual. They demonstrate some PostgreSQL features
+using the classic PyGreSQL interface. They can serve as an introduction
+to PostgreSQL, but not so much as examples for the use of PyGreSQL.</p>
+<section id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic.html">Basic examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="basic.html#creating-a-connection-to-the-database">Creating a connection to the database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic.html#creating-tables">Creating tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic.html#insert-data">Insert data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic.html#retrieving-data">Retrieving data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic.html#retrieving-data-into-other-tables">Retrieving data into other tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic.html#aggregates">Aggregates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic.html#joining-tables">Joining tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic.html#updating-data">Updating data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic.html#deleting-data">Deleting data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic.html#removing-the-tables">Removing the tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Examples for advanced features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="advanced.html#inheritance">Inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced.html#arrays">Arrays</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="func.html">Examples for using SQL functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="func.html#creating-sql-functions-on-base-types">Creating SQL Functions on Base Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="func.html#creating-sql-functions-on-composite-types">Creating SQL Functions on Composite Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="func.html#creating-sql-functions-with-multiple-sql-statements">Creating SQL Functions with multiple SQL statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="func.html#remove-functions-that-were-created-in-this-example">Remove functions that were created in this example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="syscat.html">Examples for using the system catalogs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="syscat.html#lists-indices">Lists indices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syscat.html#list-user-defined-attributes">List user defined attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syscat.html#list-user-defined-base-types">List user defined base types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syscat.html#list-operators">List operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syscat.html#list-functions-of-a-language">List functions of a language</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syscat.html#list-aggregate-functions">List aggregate functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syscat.html#list-operator-families">List operator families</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/pygresql.png" alt="Logo of PyGreSQL"/>
+            </a></p>
+<h1 class="logo"><a href="../../index.html">PyGreSQL</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">About PyGreSQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../copyright.html">Copyright notice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../download/index.html">Download information</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">The PyGreSQL documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#contents">Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../community/index.html">PyGreSQL Development and Support</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">The PyGreSQL documentation</a><ul>
+      <li>Previous: <a href="../pgdb/adaptation.html" title="previous chapter">Remarks on Adaptation and Typecasting</a></li>
+      <li>Next: <a href="basic.html" title="next chapter">Basic examples</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, The PyGreSQL team.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/contents/postgres/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
